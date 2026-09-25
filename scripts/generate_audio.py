@@ -8,7 +8,8 @@ SLIDES = [
     (4, "Tonight at Epicenter Stockholm, we tested two real Swedish ideas. First, Klarna for Regret: paying for your bad life decisions in four easy installments. Boss Shark gave it a valuation of twenty-five kronor and a half-eaten cinnamon bun. Second, FikaSync: an AI that locks your computer if you don't eat a cinnamon bun at 3 PM. Funded with a lifetime supply of coffee!"),
     (5, "We built two doors into one app. The Hot Seat gives founders a clean, funny boardroom with an angel-to-dragon mood slider and zero developer clutter. Meanwhile, the Observatory gives hackathon judges real-time telemetry, Arize Phoenix tracing, and live tracking of our one hundred Euro Anthropic voucher."),
     (6, "Why is it so fast? Our multi-agent parallel fan-out runs all three judges at the exact same second using Anthropic's Claude Fable and Opus. Latency drops from forty-eight seconds down to fourteen seconds, saving sixty-five percent of your time."),
-    (7, "PitchRoast gives founders the honest truth in fifteen seconds, costing zero dollars instead of giving away twenty percent of your company. On behalf of human Akkireddy Challa and AI clone Akkireddy: our official verdict? PitchRoast is funded. Thank you, Stockholm!")
+    (7, "PitchRoast gives founders the honest truth in fifteen seconds, costing zero dollars instead of giving away twenty percent of your company. On behalf of human Akkireddy Challa and AI clone Akkireddy: our official verdict? PitchRoast is funded!"),
+    (8, "And now, talk is cheap! We need one brave founder from this Epicenter audience right now! Shout out your startup idea in one sentence, and let our four AI judges roast you live on screen in fifteen seconds. Who has the courage to enter the Hot Seat?")
 ]
 
 out_dirs = [

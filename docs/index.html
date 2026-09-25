@@ -756,10 +756,48 @@
       </div>
 
       <div style="margin-top: 1.5rem; display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
-        <button class="btn btn-primary" onclick="goToSlide(1)">🔄 Replay Presentation</button>
+        <button class="btn btn-primary" onclick="nextSlide()">Take The Challenge ➔</button>
         <div style="color: #FBBF24; font-weight: 700; font-size: 0.95rem;">
           ✨ Created with Claude by Akkireddy Challa
         </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: Live Audience Challenge -->
+    <section class="slide" data-slide="8">
+      <div class="kicker">Live Audience Challenge</div>
+      <h1>Who Dares Enter The <span class="grad">Hot Seat?</span> 🔥</h1>
+      <p class="lead">
+        We need ONE brave founder from Epicenter Stockholm right now!
+      </p>
+
+      <div class="grid-2" style="margin-top: 1.5rem; text-align: left;">
+        <div class="card" style="background: rgba(255, 69, 0, 0.08); border: 2px solid rgba(255, 69, 0, 0.5);">
+          <div class="card-icon">🎙️</div>
+          <div class="card-title">1. Shout Out Your Idea</div>
+          <div class="card-desc">
+            Give us your startup pitch in <strong>one sentence</strong>. Any app, B2B SaaS, crypto gizmo, or weird Swedish concept!
+          </div>
+        </div>
+
+        <div class="card" style="background: rgba(56, 189, 248, 0.08); border: 2px solid rgba(56, 189, 248, 0.5);">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">2. Get Roasted in 15s</div>
+          <div class="card-desc">
+            Watch <strong>Max Market</strong>, <strong>Penny Pinch</strong>, <strong>Tech Toby</strong>, and <strong>Boss Shark</strong> deliberate live on the big screen!
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; display: flex; gap: 16px; justify-content: center; align-items: center; flex-wrap: wrap;">
+        <a href="http://localhost:8501" target="_blank" class="btn btn-primary" style="font-size: 1.1rem; padding: 12px 28px; text-decoration: none;">
+          🎯 Open Live Hot Seat App ➔
+        </a>
+        <button class="btn" onclick="goToSlide(1)">🔄 Replay Deck</button>
+      </div>
+
+      <div style="margin-top: 1.5rem; color: #94A3B8; font-size: 0.9rem;">
+        Created by <span style="color: #FBBF24; font-weight: 700;">Akkireddy Challa</span> • Powered by Anthropic Claude
       </div>
     </section>
   </main>
@@ -771,7 +809,7 @@
   </div>
 
   <footer>
-    <div class="slide-count" id="slideCount">Slide 1 of 7</div>
+    <div class="slide-count" id="slideCount">Slide 1 of 8</div>
     <div class="controls">
       <button class="btn" id="prevBtn" onclick="prevSlide()">← Previous</button>
       <button class="btn" id="voiceSlideBtn" onclick="toggleCurrentSlideVoice()">🔊 Speak Slide</button>
@@ -782,7 +820,7 @@
 
   <script>
     let currentSlide = 1;
-    const totalSlides = 7;
+    const totalSlides = 8;
 
     const slides = document.querySelectorAll('.slide');
     const progressBar = document.getElementById('progressBar');
@@ -824,7 +862,11 @@
       },
       7: {
         file: 'audio/slide7',
-        text: "PitchRoast gives founders the honest truth in fifteen seconds, costing zero dollars instead of giving away twenty percent of your company. On behalf of human Akkireddy Challa and AI clone Akkireddy: our official verdict? PitchRoast is funded. Thank you, Stockholm!"
+        text: "PitchRoast gives founders the honest truth in fifteen seconds, costing zero dollars instead of giving away twenty percent of your company. On behalf of human Akkireddy Challa and AI clone Akkireddy: our official verdict? PitchRoast is funded!"
+      },
+      8: {
+        file: 'audio/slide8',
+        text: "And now, talk is cheap! We need one brave founder from this Epicenter audience right now! Shout out your startup idea in one sentence, and let our four AI judges roast you live on screen in fifteen seconds. Who has the courage to enter the Hot Seat?"
       }
     };
 
@@ -1014,7 +1056,7 @@
         }
       } else if (e.key === 'f' || e.key === 'F') {
         toggleFullScreen();
-      } else if (e.key >= '1' && e.key <= '7') {
+      } else if (e.key >= '1' && e.key <= '8') {
         goToSlide(parseInt(e.key));
       }
     });
