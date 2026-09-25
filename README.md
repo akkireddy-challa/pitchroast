@@ -1,11 +1,13 @@
 # PitchRoast 🔥 — The Autonomous Venture Syndicate
 
+[![Creator](https://img.shields.io/badge/Creator-Akkireddy%20Challa-FF8C00.svg)](https://github.com/aue729)
 [![Anthropic Claude](https://img.shields.io/badge/Powered%20by-Anthropic%20Claude-8A2BE2.svg)](https://console.anthropic.com)
 [![Observability](https://img.shields.io/badge/Observability-Arize%20Phoenix%20OSS-orange.svg)](https://github.com/Arize-ai/phoenix)
 [![Event](https://img.shields.io/badge/Stockholm-Build%20Day%20%40%20Epicenter-FF4500.svg)](https://luma.com/claudecommunity)
 [![Track](https://img.shields.io/badge/Challenge-Delight%20%26%20Breakthrough-success.svg)](#)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](#)
 
+> **Created by Akkireddy Challa** at the Stockholm Claude Community Build Day @ Epicenter.  
 > *"An autonomous venture committee of 4 ruthless AI partners who debate, dismantle, and deliver the brutal truth no VC says to your face—complete with live agent banter and a satirical term sheet."*
 
 ---
@@ -131,9 +133,22 @@ set `PITCHROAST_PRICING` once you have confirmed the real number in the Console.
 
 ---
 
-## 🎤 2-Minute Demo Presentation Script
+## 🎤 Stage Presentation Options
 
-Designed for anyone (even a 10-year-old!) to deliver with confidence, laughter, and zero jargon:
+### Option A: 🤖 Autonomous AI Clone Mode (Zero Stage Fright!)
+You don't need to speak or worry about public speaking! The presentation deck features an autonomous audio voiceover powered by the AI Clone of Akkireddy:
+
+1. **Akkireddy's 5-Second Intro at the Mic**:
+   > *"Good evening Epicenter Stockholm! In the spirit of autonomous AI agents, why have a tired human pitch on stage when you can have an AI clone do it? Please welcome: my digital AI clone."*
+2. **Press `P` on the keyboard (or click `🎙️ Let AI Pitch`)**:
+   - The AI Clone introduces itself:
+     > *"Hello Epicenter Stockholm! I am the AI clone of human Akkireddy Challa. My human original built this entire project tonight for the Claude Hackathon. But why have a tired human pitch on stage when you can have a superior AI clone do it with zero stage fright? Welcome to PitchRoast! Let's see why your business idea is probably terrible."*
+   - The AI narrates all 7 slides with live sound waves and real-time subtitles, automatically advancing smoothly from slide to slide!
+
+---
+
+### Option B: 🎙️ Live Human Pitch (2-Minute Script)
+If you want to speak yourself, use this simple, kid-friendly script:
 
 1. **The Hook (0:00 - 0:25)**:
    > *"Have you ever told a friend about a cool idea, and they said: 'Oh wow, that’s so great! You should totally do that!' ... But deep down, you knew it was actually a terrible idea, and they were just being nice?  
