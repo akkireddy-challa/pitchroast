@@ -62,7 +62,6 @@ st.markdown("""
     .badge-gp { background-color: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
     .badge-cfo { background-color: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
     .badge-cto { background-color: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-shark { background-color: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); }
     
     .agent-card {
         background: rgba(26, 32, 44, 0.7);
@@ -84,15 +83,6 @@ st.markdown("""
         color: #718096;
         margin-bottom: 0.8rem;
     }
-    .term-sheet-box {
-        background: #0F172A;
-        border: 1px solid #F59E0B;
-        border-radius: 12px;
-        padding: 1.5rem;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.9rem;
-        margin-top: 1.5rem;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -104,6 +94,13 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# Model configuration mapping
+MODEL_MAP = {
+    "⚡ Claude Fable 5.1 (Fast & Token-Efficient — Recommended for Testing)": "claude-fable-5-1",
+    "🧠 Claude Opus 5.5 (Deep Extended Thinking — Best for Final Demo)": "claude-opus-5-5",
+    "🏛️ Claude Opus 5 (Classic Frontier)": "claude-opus-5"
+}
+
 # Sidebar
 with st.sidebar:
     st.header("⚙️ Syndicate Settings")
@@ -111,34 +108,26 @@ with st.sidebar:
         "Anthropic API Key",
         value=os.getenv("ANTHROPIC_API_KEY", ""),
         type="password",
-        help="Use your event voucher key ($100 credit) from Epicenter."
+        help="Configured from event voucher key."
     )
     
-    model_choice = st.selectbox(
-        "Frontier Model",
-        [
-            "claude-3-5-sonnet-20241022",
-            "claude-opus-5-5",
-            "claude-fable-5-1",
-            "Custom..."
-        ],
+    selected_model_label = st.selectbox(
+        "Active Model",
+        list(MODEL_MAP.keys()),
         index=0,
-        help="Choose model. Opus 5.5 and Fable 5.1 can be chosen if enabled for your key."
+        help="Use Fable 5.1 during development to conserve credits; switch to Opus 5.5 for the live demo."
     )
-    
-    if model_choice == "Custom...":
-        selected_model = st.text_input("Model ID", value="claude-3-5-sonnet-20241022")
-    else:
-        selected_model = model_choice
+    selected_model = MODEL_MAP[selected_model_label]
 
     brutality = st.slider("Brutality Index (Temperature)", 0.2, 1.0, 0.85, 0.05)
     
     st.markdown("---")
-    st.markdown("### 🏛️ Committee Members")
-    st.markdown("• **🕶️ Marc Low-res** (General Partner)\n• **📊 Karen Burn-rate** (Quant CFO)\n• **💻 Torvalds-9000** (10x Grumpy CTO)\n• **🦈 Gordon Gekko AI** (Syndicate Shark)")
+    st.markdown("### 💡 Token Budget Tips")
+    st.info("**Development Tip**: Keep **Fable 5.1** selected while tweaking prompts. It consumes ~80% fewer tokens and has zero thinking overhead. Switch to **Opus 5.5** for your 20:30 presentation!")
     
     st.markdown("---")
-    st.caption("⚡ Built with Anthropic Claude for Stockholm Build Day at Epicenter.")
+    st.markdown("### 🏛️ Committee Members")
+    st.markdown("• **🕶️ Marc Low-res** (General Partner)\n• **📊 Karen Burn-rate** (Quant CFO)\n• **💻 Torvalds-9000** (10x Grumpy CTO)\n• **🦈 Gordon Gekko AI** (Syndicate Shark)")
 
 # Pitch Presets
 preset_options = {
@@ -211,24 +200,38 @@ Analyze the pitch and return a valid JSON object with the exact keys:
 Ensure the tone is brilliant, hilarious, cynical, and Silicon Valley satire without violating safety policies. Return ONLY valid JSON.
 """
 
-        with st.spinner("⚡ Convening the 4 partners in the boardroom..."):
+        with st.spinner(f"⚡ Convening the 4 partners via {selected_model}..."):
             try:
+                # Append brutality instruction to system prompt
+                active_system_prompt = f"{system_orchestrator}\nRoast intensity level: {brutality:.2f} out of 1.0 (Higher means maximum cynical brutality)."
+
                 response = client.messages.create(
                     model=selected_model,
-                    max_tokens=1800,
-                    temperature=brutality,
-                    system=system_orchestrator,
+                    max_tokens=2048,
+                    system=active_system_prompt,
                     messages=[{"role": "user", "content": f"Pitch to evaluate:\n\n{pitch_input}"}]
                 )
                 
-                content = response.content[0].text
-                
-                # Robust JSON extraction
-                json_match = re.search(r'\{.*\}', content, re.DOTALL)
+                # Extract text and optional thinking blocks
+                thinking_text = ""
+                main_text = ""
+                for block in response.content:
+                    if hasattr(block, "thinking"):
+                        thinking_text += block.thinking
+                    if hasattr(block, "text"):
+                        main_text += block.text
+
+                # Optional reasoning accordion for Opus
+                if thinking_text:
+                    with st.expander("🧠 VC Partner Deliberation (Claude Deep Reasoning)", expanded=False):
+                        st.markdown(f"```\n{thinking_text.strip()}\n```")
+
+                # Parse JSON
+                json_match = re.search(r'\{.*\}', main_text, re.DOTALL)
                 if json_match:
                     data = json.loads(json_match.group(0))
                 else:
-                    data = json.loads(content)
+                    data = json.loads(main_text)
 
                 # Render Metrics Banner
                 st.markdown("### 📊 Syndicate Quantitative Scorecard")
@@ -308,13 +311,18 @@ THE 1% REDEMPTION PIVOT:
                 st.markdown("### 📜 Syndicate Verdict & Term Sheet")
                 st.code(term_sheet_text, language="yaml")
 
-                # Download button for demo export
-                st.download_button(
-                    label="📥 Export Term Sheet (.txt)",
-                    data=term_sheet_text,
-                    file_name="PitchRoast_Term_Sheet.txt",
-                    mime="text/plain"
-                )
+                # Action bar: Download + Token telemetry
+                col_dl, col_usage = st.columns([1, 2])
+                with col_dl:
+                    st.download_button(
+                        label="📥 Export Term Sheet (.txt)",
+                        data=term_sheet_text,
+                        file_name="PitchRoast_Term_Sheet.txt",
+                        mime="text/plain",
+                        use_container_width=True
+                    )
+                with col_usage:
+                    st.caption(f"⚡ **Session Telemetry**: {response.usage.input_tokens} input tokens | {response.usage.output_tokens} output tokens ({selected_model})")
 
             except Exception as e:  # noqa: BLE001
                 st.error(f"Syndicate session error: {e!s}")

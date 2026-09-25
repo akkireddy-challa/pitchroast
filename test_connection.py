@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """
-Quick test script to verify your Anthropic API Key once obtained tonight.
-Usage:
-    export ANTHROPIC_API_KEY="sk-ant-..."
-    python test_connection.py
+Quick test script to verify your Anthropic API Key.
+Tests against event-enabled models: claude-fable-5-1 and claude-opus-5-5.
 """
 import os
 import sys
@@ -21,8 +19,8 @@ if not api_key:
     print("or create a .env file with ANTHROPIC_API_KEY=sk-ant-...")
     sys.exit(1)
 
-print(f"🔑 Key detected (prefix: {api_key[:12]}...)")
-print("📡 Testing connection with Anthropic API...")
+print(f"🔑 Key detected (prefix: {api_key[:14]}...)")
+print("📡 Connecting to Anthropic public API...")
 
 client = anthropic.Anthropic(
     api_key=api_key,
@@ -31,12 +29,14 @@ client = anthropic.Anthropic(
 
 try:
     response = client.messages.create(
-        model="claude-3-5-sonnet-20241022",
-        max_tokens=100,
-        messages=[{"role": "user", "content": "Say hello from Stockholm Epicenter Build Day in 5 words."}]
+        model="claude-fable-5-1",
+        max_tokens=50,
+        messages=[{"role": "user", "content": "Say 'Stockholm Epicenter Ready!' and nothing else."}]
     )
-    print("✅ Success! Response received:")
-    print(f"👉 {response.content[0].text.strip()}")
+    text = "".join(b.text for b in response.content if hasattr(b, "text"))
+    print("✅ Success! Response received from claude-fable-5-1:")
+    print(f"👉 {text.strip()}")
+    print(f"📊 Usage: {response.usage.input_tokens} input tokens, {response.usage.output_tokens} output tokens")
 except anthropic.APIError as e:
     print(f"❌ Anthropic API call failed: {e}")
     sys.exit(1)
