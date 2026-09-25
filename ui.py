@@ -377,6 +377,7 @@ def hero(
 <div class="pr-hero">
   <div class="pr-flame">&#128293;</div>
   <div class="pr-wordmark">{escape(title)}</div>
+  <div style="font-size: 0.85rem; color: #FBBF24; font-weight: 700; margin-top: 4px; margin-bottom: 6px;">✨ Built with Claude by Akkireddy Challa</div>
   <div class="pr-tagline">{escape(tagline)}</div>
   <div class="pr-live">{led}{escape(status)}</div>
 </div>

@@ -398,6 +398,125 @@
     .btn-primary:hover {
       filter: brightness(1.15);
     }
+
+    /* Voice Pitcher & Creator Styles */
+    .author-tag {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #94A3B8;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-left: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .voice-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .voice-btn {
+      background: rgba(255, 69, 0, 0.15);
+      border: 1px solid rgba(255, 69, 0, 0.4);
+      color: #FF8C00;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .voice-btn:hover {
+      background: rgba(255, 69, 0, 0.3);
+      border-color: #FF4500;
+      color: #FFF;
+      box-shadow: 0 0 15px rgba(255, 69, 0, 0.4);
+    }
+    .voice-btn.active {
+      background: linear-gradient(90deg, #FF4500, #FF8C00);
+      color: #FFF;
+      border-color: transparent;
+      box-shadow: 0 0 20px rgba(255, 69, 0, 0.6);
+      animation: pulse-glow 2s infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 15px rgba(255, 69, 0, 0.5); }
+      50% { box-shadow: 0 0 25px rgba(255, 140, 0, 0.8); }
+    }
+    .sound-wave {
+      display: none;
+      align-items: center;
+      gap: 3px;
+      height: 18px;
+    }
+    .sound-wave.active {
+      display: flex;
+    }
+    .sound-wave span {
+      width: 3px;
+      height: 100%;
+      background: #FF8C00;
+      border-radius: 3px;
+      animation: sound-wave-bar 0.8s ease-in-out infinite alternate;
+    }
+    .sound-wave span:nth-child(2) { animation-delay: 0.2s; height: 60%; }
+    .sound-wave span:nth-child(3) { animation-delay: 0.4s; height: 90%; }
+    .sound-wave span:nth-child(4) { animation-delay: 0.1s; height: 40%; }
+    .sound-wave span:nth-child(5) { animation-delay: 0.3s; height: 75%; }
+    @keyframes sound-wave-bar {
+      0% { transform: scaleY(0.2); }
+      100% { transform: scaleY(1.0); }
+    }
+    .subtitle-bar {
+      position: fixed;
+      bottom: 75px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 850px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 69, 0, 0.35);
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: #F8FAFC;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      text-align: center;
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6);
+      z-index: 90;
+      display: none;
+      transition: all 0.3s;
+    }
+    .subtitle-bar.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .subtitle-tag {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #FF8C00;
+      margin-bottom: 4px;
+    }
+    .creator-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      color: #FBBF24;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -410,6 +529,15 @@
   <header>
     <div class="brand">
       🔥 <span>PitchRoast</span>
+      <span class="author-tag">by Akkireddy Challa</span>
+    </div>
+    <div class="voice-controls">
+      <button class="voice-btn" id="voiceToggleBtn" onclick="toggleVoicePitch()" title="Shortcut: Press P or V">
+        <span id="voiceIcon">🎙️</span> <span id="voiceLabel">Let AI Pitch (Auto-Voice)</span>
+      </button>
+      <div class="sound-wave" id="soundWave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
     </div>
     <div class="event-badge">
       <div class="dot"></div>
@@ -429,6 +557,9 @@
         <div class="tech-pill">🤖 Powered by Anthropic Claude</div>
         <div class="tech-pill">⚡ Super Fast Multi-Agent AI</div>
         <div class="tech-pill">🇸🇪 Built @ Epicenter Stockholm</div>
+      </div>
+      <div>
+        <div class="creator-pill">✨ Created by Akkireddy Challa</div>
       </div>
     </section>
 
@@ -624,16 +755,26 @@
         <div>================================================================</div>
       </div>
 
-      <div style="margin-top: 2rem;">
+      <div style="margin-top: 1.5rem; display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
         <button class="btn btn-primary" onclick="goToSlide(1)">🔄 Replay Presentation</button>
+        <div style="color: #FBBF24; font-weight: 700; font-size: 0.95rem;">
+          ✨ Created with Claude by Akkireddy Challa
+        </div>
       </div>
     </section>
   </main>
+
+  <!-- Realtime Subtitle Overlay -->
+  <div class="subtitle-bar" id="subtitleBar">
+    <div class="subtitle-tag">🤖 PitchRoast AI Clone of Akkireddy</div>
+    <div id="subtitleText">...</div>
+  </div>
 
   <footer>
     <div class="slide-count" id="slideCount">Slide 1 of 7</div>
     <div class="controls">
       <button class="btn" id="prevBtn" onclick="prevSlide()">← Previous</button>
+      <button class="btn" id="voiceSlideBtn" onclick="toggleCurrentSlideVoice()">🔊 Speak Slide</button>
       <button class="btn btn-primary" id="nextBtn" onclick="nextSlide()">Next →</button>
       <button class="btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
     </div>
@@ -648,6 +789,49 @@
     const slideCount = document.getElementById('slideCount');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
+    const subtitleBar = document.getElementById('subtitleBar');
+    const subtitleText = document.getElementById('subtitleText');
+    const soundWave = document.getElementById('soundWave');
+    const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+    const voiceIcon = document.getElementById('voiceIcon');
+    const voiceLabel = document.getElementById('voiceLabel');
+    const voiceSlideBtn = document.getElementById('voiceSlideBtn');
+
+    const SLIDE_SPEECHES = {
+      1: {
+        file: 'audio/slide1',
+        text: "Hello Epicenter Stockholm! I am the AI clone of human Akkireddy Challa. My human original built this entire project tonight for the Claude Hackathon. But why have a tired human pitch on stage when you can have a superior AI clone do it with zero stage fright? Welcome to PitchRoast! Let's see why your business idea is probably terrible."
+      },
+      2: {
+        file: 'audio/slide2',
+        text: "Here is the big problem. When founders pitch human investors, the investors say: 'Oh wow, great deck! Let's definitely stay in touch!' That is polite human code for: 'This makes zero sense, but I don't want to hurt your feelings.' You waste six months of your life. PitchRoast gives you the honest, funny truth in fifteen seconds."
+      },
+      3: {
+        file: 'audio/slide3',
+        text: "Meet our committee. Max Market asks: 'Will anyone actually wake up and pay for this?' Penny Pinch counts your pennies and screams: 'You are spending all your allowance to make zero dollars!' Tech Toby looks at your computer code and says: 'You didn't build smart AI, you just taped an iPad to a broom!' And Boss Shark decides: Deal or No Deal!"
+      },
+      4: {
+        file: 'audio/slide4',
+        text: "Tonight at Epicenter Stockholm, we tested two real Swedish ideas. First, Klarna for Regret: paying for your bad life decisions in four easy installments. Boss Shark gave it a valuation of twenty-five kronor and a half-eaten cinnamon bun. Second, FikaSync: an AI that locks your computer if you don't eat a cinnamon bun at 3 PM. Funded with a lifetime supply of coffee!"
+      },
+      5: {
+        file: 'audio/slide5',
+        text: "We built two doors into one app. The Hot Seat gives founders a clean, funny boardroom with an angel-to-dragon mood slider and zero developer clutter. Meanwhile, the Observatory gives hackathon judges real-time telemetry, Arize Phoenix tracing, and live tracking of our one hundred Euro Anthropic voucher."
+      },
+      6: {
+        file: 'audio/slide6',
+        text: "Why is it so fast? Our multi-agent parallel fan-out runs all three judges at the exact same second using Anthropic's Claude Fable and Opus. Latency drops from forty-eight seconds down to fourteen seconds, saving sixty-five percent of your time."
+      },
+      7: {
+        file: 'audio/slide7',
+        text: "PitchRoast gives founders the honest truth in fifteen seconds, costing zero dollars instead of giving away twenty percent of your company. On behalf of human Akkireddy Challa and AI clone Akkireddy: our official verdict? PitchRoast is funded. Thank you, Stockholm!"
+      }
+    };
+
+    let audioPlayer = new Audio();
+    let isAutoPitching = false;
+    let isSpeaking = false;
+    let autoAdvanceTimer = null;
 
     function updateSlide() {
       slides.forEach((slide, index) => {
@@ -663,12 +847,20 @@
       
       prevBtn.disabled = currentSlide === 1;
       nextBtn.innerText = currentSlide === totalSlides ? 'Finish 🏁' : 'Next →';
+
+      if (isAutoPitching) {
+        playSlideAudio(currentSlide);
+      } else {
+        stopAudio();
+      }
     }
 
     function nextSlide() {
       if (currentSlide < totalSlides) {
         currentSlide++;
         updateSlide();
+      } else if (isAutoPitching) {
+        stopVoicePitch();
       }
     }
 
@@ -692,12 +884,134 @@
       }
     }
 
+    function playSlideAudio(slideNum) {
+      stopAudio();
+      const speech = SLIDE_SPEECHES[slideNum];
+      if (!speech) return;
+
+      subtitleText.innerText = speech.text;
+      subtitleBar.classList.add('active');
+      soundWave.classList.add('active');
+      isSpeaking = true;
+      voiceSlideBtn.innerText = '⏹️ Stop Voice';
+
+      // Attempt HTML5 audio file first
+      audioPlayer.src = speech.file + '.m4a';
+      audioPlayer.currentTime = 0;
+
+      audioPlayer.onended = () => {
+        onAudioFinished();
+      };
+
+      audioPlayer.onerror = () => {
+        // Fallback to web speech synthesis
+        fallbackWebSpeech(speech.text);
+      };
+
+      const playPromise = audioPlayer.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          fallbackWebSpeech(speech.text);
+        });
+      }
+    }
+
+    function fallbackWebSpeech(text) {
+      if (!('speechSynthesis' in window)) {
+        onAudioFinished();
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const engVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Daniel') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Alex'))) || voices.find(v => v.lang.startsWith('en'));
+      if (engVoice) utterance.voice = engVoice;
+
+      utterance.onend = () => onAudioFinished();
+      utterance.onerror = () => onAudioFinished();
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function onAudioFinished() {
+      isSpeaking = false;
+      soundWave.classList.remove('active');
+      voiceSlideBtn.innerText = '🔊 Speak Slide';
+
+      if (isAutoPitching) {
+        if (currentSlide < totalSlides) {
+          autoAdvanceTimer = setTimeout(() => {
+            nextSlide();
+          }, 1400);
+        } else {
+          stopVoicePitch();
+        }
+      } else {
+        subtitleBar.classList.remove('active');
+      }
+    }
+
+    function stopAudio() {
+      if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+      audioPlayer.pause();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      isSpeaking = false;
+      soundWave.classList.remove('active');
+      subtitleBar.classList.remove('active');
+      voiceSlideBtn.innerText = '🔊 Speak Slide';
+    }
+
+    function toggleVoicePitch() {
+      if (isAutoPitching) {
+        stopVoicePitch();
+      } else {
+        startVoicePitch();
+      }
+    }
+
+    function startVoicePitch() {
+      isAutoPitching = true;
+      voiceToggleBtn.classList.add('active');
+      voiceIcon.innerText = '⏸️';
+      voiceLabel.innerText = 'AI Pitching... (Pause)';
+      playSlideAudio(currentSlide);
+    }
+
+    function stopVoicePitch() {
+      isAutoPitching = false;
+      stopAudio();
+      voiceToggleBtn.classList.remove('active');
+      voiceIcon.innerText = '🎙️';
+      voiceLabel.innerText = 'Let AI Pitch (Auto-Voice)';
+    }
+
+    function toggleCurrentSlideVoice() {
+      if (isSpeaking) {
+        stopAudio();
+      } else {
+        playSlideAudio(currentSlide);
+      }
+    }
+
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      if (e.key === 'p' || e.key === 'P' || e.key === 'v' || e.key === 'V') {
+        toggleVoicePitch();
+      } else if (e.key === 's' || e.key === 'S') {
+        toggleCurrentSlideVoice();
+      } else if (e.key === 'ArrowRight' || e.key === 'PageDown') {
         nextSlide();
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
         prevSlide();
+      } else if (e.key === ' ') {
+        if (isSpeaking) {
+          stopAudio();
+        } else {
+          nextSlide();
+        }
       } else if (e.key === 'f' || e.key === 'F') {
         toggleFullScreen();
       } else if (e.key >= '1' && e.key <= '7') {
