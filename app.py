@@ -101,6 +101,19 @@ MODEL_MAP = {
     "🏛️ Claude Opus 5 (Classic Frontier)": "claude-opus-5"
 }
 
+@st.cache_resource
+def setup_observability():
+    """Initializes Arize Phoenix OSS tracing locally without consuming external API credits."""
+    try:
+        import phoenix as px
+        from openinference.instrumentation.anthropic import AnthropicInstrumentor
+
+        session = px.launch_app(run_in_thread=True)
+        AnthropicInstrumentor().instrument()
+        return session.url
+    except Exception:  # noqa: BLE001
+        return None
+
 # Sidebar
 with st.sidebar:
     st.header("⚙️ Syndicate Settings")
@@ -125,6 +138,16 @@ with st.sidebar:
     st.markdown("### 💡 Token Budget Tips")
     st.info("**Development Tip**: Keep **Fable 5.1** selected while tweaking prompts. It consumes ~80% fewer tokens and has zero thinking overhead. Switch to **Opus 5.5** for your 20:30 presentation!")
     
+    st.markdown("---")
+    st.markdown("### 🔭 Arize Phoenix Observability")
+    phoenix_url = setup_observability()
+    if phoenix_url:
+        st.success("✅ Tracing Active (Local OSS)")
+        st.markdown(f"📊 [**Open Phoenix Tracing UI**]({phoenix_url})")
+        st.caption("Tracks OTEL spans, latency, token spend, and agent prompts locally at 0 credit cost.")
+    else:
+        st.caption("Phoenix tracing offline.")
+
     st.markdown("---")
     st.markdown("### 🏛️ Committee Members")
     st.markdown("• **🕶️ Marc Low-res** (General Partner)\n• **📊 Karen Burn-rate** (Quant CFO)\n• **💻 Torvalds-9000** (10x Grumpy CTO)\n• **🦈 Gordon Gekko AI** (Syndicate Shark)")

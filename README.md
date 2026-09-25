@@ -1,6 +1,7 @@
 # PitchRoast 🔥 — The Autonomous Venture Syndicate
 
 [![Anthropic Claude](https://img.shields.io/badge/Powered%20by-Anthropic%20Claude-8A2BE2.svg)](https://console.anthropic.com)
+[![Observability](https://img.shields.io/badge/Observability-Arize%20Phoenix%20OSS-orange.svg)](https://github.com/Arize-ai/phoenix)
 [![Event](https://img.shields.io/badge/Stockholm-Build%20Day%20%40%20Epicenter-FF4500.svg)](https://luma.com/claudecommunity)
 [![Track](https://img.shields.io/badge/Challenge-Delight%20%26%20Breakthrough-success.svg)](#)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](#)
@@ -111,5 +112,6 @@ Designed specifically for the 20:30 presentation at Epicenter:
 ## 🛠️ Tech Stack
 * **Language & Runtime**: Python 3.12+ / 3.14 (Mise, uv)
 * **Frontend**: Streamlit 1.64 (Custom Dark Glassmorphism CSS)
-* **AI Orchestration**: Anthropic Python SDK (`claude-3-5-sonnet`, `claude-opus-5-5`, `claude-fable-5-1`)
+* **AI Orchestration**: Anthropic Python SDK (`claude-fable-5-1`, `claude-opus-5-5`, `claude-opus-5`)
+* **Observability & Tracing**: Arize Phoenix OSS (OpenInference / OpenTelemetry native spans, token metrics, and latency tracking)
 * **Linter & Standards**: Ruff 0.16
