@@ -99,6 +99,13 @@ cmd_phoenix() {
     open "http://localhost:6006" 2>/dev/null || xdg-open "http://localhost:6006" 2>/dev/null || echo "Open http://localhost:6006 in your browser"
 }
 
+# 6. Open Slide Presentation Deck
+cmd_deck() {
+    echo -e "${GREEN}${BOLD}📽️ Opening Pitch Presentation Deck in Browser...${NC}"
+    open "$DIR/deck.html" 2>/dev/null || xdg-open "$DIR/deck.html" 2>/dev/null || echo "Open $DIR/deck.html in your browser"
+}
+
+
 # 6. Lint, Verify, & Git Push
 cmd_push() {
     echo -e "${CYAN}${BOLD}🧹 Step 1: Running Ruff Auto-Linter...${NC}"
@@ -132,23 +139,25 @@ cmd_menu() {
     show_banner
     echo -e "${BOLD}Select an action to execute:${NC}\n"
     echo -e "  ${GREEN}1)${NC} 🚀 Run Streamlit App      ${BLUE}(Interactive Web Boardroom :8501)${NC}"
-    echo -e "  ${GREEN}2)${NC} ⚡ Run CLI Demo           ${BLUE}(Instant 4-Agent Roast & Term Sheet)${NC}"
-    echo -e "  ${GREEN}3)${NC} 🤖 Claude Code Co-Pilot   ${BLUE}(Interactive CLI Pair Programmer)${NC}"
-    echo -e "  ${GREEN}4)${NC} 🔭 Open Arize Phoenix     ${BLUE}(Tracing Dashboard :6006)${NC}"
-    echo -e "  ${GREEN}5)${NC} 🔑 Verify Connectivity    ${BLUE}(Test Key & Model Availability)${NC}"
-    echo -e "  ${GREEN}6)${NC} 🧹 Lint Code (Ruff)       ${BLUE}(Auto-fix formatting errors)${NC}"
-    echo -e "  ${GREEN}7)${NC} 📦 Commit & Push Code     ${BLUE}(Clean Git Push to GitHub)${NC}"
+    echo -e "  ${GREEN}2)${NC} 📽️ Open Slide Deck         ${BLUE}(Interactive Browser Pitch Deck)${NC}"
+    echo -e "  ${GREEN}3)${NC} ⚡ Run CLI Demo           ${BLUE}(Instant 4-Agent Roast & Term Sheet)${NC}"
+    echo -e "  ${GREEN}4)${NC} 🤖 Claude Code Co-Pilot   ${BLUE}(Interactive CLI Pair Programmer)${NC}"
+    echo -e "  ${GREEN}5)${NC} 🔭 Open Arize Phoenix     ${BLUE}(Tracing Dashboard :6006)${NC}"
+    echo -e "  ${GREEN}6)${NC} 🔑 Verify Connectivity    ${BLUE}(Test Key & Model Availability)${NC}"
+    echo -e "  ${GREEN}7)${NC} 🧹 Lint Code (Ruff)       ${BLUE}(Auto-fix formatting errors)${NC}"
+    echo -e "  ${GREEN}8)${NC} 📦 Commit & Push Code     ${BLUE}(Clean Git Push to GitHub)${NC}"
     echo -e "  ${GREEN}q)${NC} Quit\n"
-    read -p "Enter choice [1-7 or q]: " choice
+    read -p "Enter choice [1-8 or q]: " choice
 
     case "$choice" in
         1) cmd_app ;;
-        2) cmd_demo ;;
-        3) cmd_claude ;;
-        4) cmd_phoenix ;;
-        5) cmd_verify ;;
-        6) $VENV_RUFF check --fix --isolated . ;;
-        7) cmd_push ;;
+        2) cmd_deck ;;
+        3) cmd_demo ;;
+        4) cmd_claude ;;
+        5) cmd_phoenix ;;
+        6) cmd_verify ;;
+        7) $VENV_RUFF check --fix --isolated . ;;
+        8) cmd_push ;;
         q|Q) echo -e "\n${ORANGE}Happy Hacking! Good luck on stage! 🔥${NC}\n"; exit 0 ;;
         *) echo -e "${RED}Invalid choice!${NC}"; sleep 1; cmd_menu ;;
     esac
@@ -156,6 +165,9 @@ cmd_menu() {
 
 # Command Router
 case "$1" in
+    deck|slides)
+        cmd_deck
+        ;;
     verify|check-api)
         cmd_verify
         ;;
