@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install app demo demo-json smoke claude test phoenix check status push
+.PHONY: help install app demo demo-json smoke claude test test-api eval phoenix check status push
 
 VENV         := .venv
 VENV_BIN     := $(VENV)/bin
@@ -22,11 +22,13 @@ help:
 	@echo "======================================"
 	@echo "  make install   - 📦 Create .venv and install everything from pyproject.toml"
 	@echo "  make app       - 🚀 Run the Streamlit UI with Phoenix observability"
-	@echo "  make demo      - ⚡ Run full live CLI demo with fable-5-1"
+	@echo "  make demo      - ⚡ Full live CLI committee run (💸 4 calls on opus-5-5)"
 	@echo "  make demo-json - 🧾 Run the CLI demo with machine-readable output"
-	@echo "  make smoke     - 🧪 Pre-stage check: make test, then make demo"
+	@echo "  make smoke     - 🎬 Pre-stage check: live connectivity, then a full demo"
 	@echo "  make claude    - 🤖 Launch Claude Code pair programmer (isolated)"
-	@echo "  make test      - 🔑 Test Anthropic public API connectivity"
+	@echo "  make test      - 🧪 Offline test suites (no key, no credits)"
+	@echo "  make test-api  - 🔑 Live Anthropic connectivity probe (spends a few tokens)"
+	@echo "  make eval      - ⚖️  Judge traced roasts in Phoenix (💸 spends credits)"
 	@echo "  make phoenix   - 🔭 Open Arize Phoenix Tracing Dashboard in browser"
 	@echo "  make check     - 🧹 Lint and fix code formatting (ruff)"
 	@echo "  make status    - 📊 Show git status and recent commits"
@@ -71,7 +73,7 @@ demo-json:
 # Pre-stage check: connectivity first (cheap), then the full committee run.
 smoke:
 	@echo "🧪 Smoke check 1/2: API connectivity"
-	@$(MAKE) --no-print-directory test
+	@$(MAKE) --no-print-directory test-api
 	@echo ""
 	@echo "🧪 Smoke check 2/2: end-to-end demo"
 	@$(MAKE) --no-print-directory demo
@@ -82,9 +84,24 @@ claude:
 	@test -x ./claude_hackathon.sh || { echo "❌ ./claude_hackathon.sh missing or not executable."; exit 1; }
 	./claude_hackathon.sh
 
+# Offline suites: no key, no network, no credits. Safe to run in a loop.
 test:
 	$(call require,python)
+	$(VENV_BIN)/python test_syndicate.py
+	$(VENV_BIN)/python test_observability.py
+	$(VENV_BIN)/python test_ui.py
+	$(VENV_BIN)/python test_modes.py
+
+# Live connectivity probe - needs a key and hits the API (a few tokens).
+test-api:
+	$(call require,python)
 	$(VENV_BIN)/python test_connection.py
+
+# LLM-judges the roasts already traced in Phoenix. Every judgement is a real
+# API call, so this costs credits. Pass flags through: make eval ARGS="--dry-run"
+eval:
+	$(call require,python)
+	$(VENV_BIN)/python evaluate.py $(ARGS)
 
 # Phoenix runs in-process inside app.py / run_demo.py; there is no server to
 # open unless one of those is already running. Probe before opening a tab.

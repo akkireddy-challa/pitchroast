@@ -29,16 +29,16 @@ graph TD
     A[Founder Pitch Submission] --> B[PitchRoast Multi-Agent Committee]
     
     subgraph Boardroom Debate
-        B --> C["🕶️ <b>Marc Low-res</b><br>General Partner<br><i>Tears down TAM & Market Delusions</i>"]
-        B --> D["📊 <b>Karen Burn-rate</b><br>Quant CFO<br><i>Attacks CAC/LTV & Unit Economics</i>"]
-        B --> E["💻 <b>Torvalds-9000</b><br>10x Chief Tech Officer<br><i>Exposes AI Wrapper & Tech Debt</i>"]
+        B --> C["🕶️ <b>Trip Hockeystick</b><br>General Partner<br><i>Tears down TAM & Market Delusions</i>"]
+        B --> D["📉 <b>Dagny Downround</b><br>Quant CFO<br><i>Attacks CAC/LTV & Unit Economics</i>"]
+        B --> E["💻 <b>Kernel Panik</b><br>10x Chief Tech Officer<br><i>Exposes AI Wrapper & Tech Debt</i>"]
     end
 
     C --> F[Syndicate Consensus Engine]
     D --> F
     E --> F
 
-    F --> G["🦈 <b>Gordon Gekko AI</b><br>Managing Partner<br><i>Drafts Satirical Term Sheet & Final Score</i>"]
+    F --> G["🦈 <b>Björn Liquidation</b><br>Managing Partner<br><i>Drafts Satirical Term Sheet & Final Score</i>"]
     
     G --> H["📊 Quantitative Scorecard<br>• Delusion Index (%)<br>• Real Moat (0-10)<br>• Runway (Months)<br>• Pre-Money Valuation"]
     G --> I["📜 Satirical Term Sheet<br><i>With Absurd Mandatory Covenants</i>"]
@@ -49,10 +49,10 @@ graph TD
 
 | Agent | Persona & Title | Focus Area |
 | :--- | :--- | :--- |
-| **🕶️ Marc Low-res** | General Partner | Dismantles market size assumptions, calls out buzzword soup, and mocks lack of a genuine moat. |
-| **📊 Karen Burn-rate** | Quant Chief Financial Officer | Destroys negative gross margins, CAC > LTV, cloud burn, and the inevitable down-round. |
-| **💻 Torvalds-9000** | 10x Systems CTO | Flags "OpenAI API wrapper" architecture, tech debt, and single-point-of-failure vulnerabilities. |
-| **🦈 Gordon Gekko AI** | Syndicate Shark | Delivers the committee's final quantitative scores, valuation haircut, and non-negotiable clauses. |
+| **🕶️ Trip Hockeystick** | General Partner | Dismantles market size assumptions, calls out buzzword soup, and mocks lack of a genuine moat. |
+| **📉 Dagny Downround** | Quant Chief Financial Officer | Destroys negative gross margins, CAC > LTV, cloud burn, and the inevitable down-round. |
+| **💻 Kernel Panik** | 10x Systems CTO | Flags "OpenAI API wrapper" architecture, tech debt, and single-point-of-failure vulnerabilities. |
+| **🦈 Björn Liquidation** | Syndicate Shark | Delivers the committee's final quantitative scores, valuation haircut, and non-negotiable clauses. |
 
 ---
 
@@ -89,7 +89,45 @@ source .venv/bin/activate
 ```zsh
 streamlit run app.py
 ```
-Open **`http://localhost:8501`** in your browser.
+Open **`http://localhost:8501`** in your browser. `app.py` is the only runnable
+entrypoint; every other module is imported by it.
+
+### Two doors into the same session
+
+| URL | View | Audience |
+| --- | --- | --- |
+| `http://localhost:8501/` or `?mode=founder` | 🎯 **Founder Hot Seat** | Founders. Quick pitches, a VC-mood dial, the committee roster, the scorecard and the stamped term sheet. Zero technical noise: no API key, no model id, no Phoenix, no token counters. |
+| `http://localhost:8501/?mode=admin` | 🔬 **Syndicate Observatory** | Judges and operators. Phoenix trace hub with live daemon status, token/credit telemetry against the €100 voucher, model + effort orchestration, panel concurrency with measured fan-out savings, Claude's deliberation traces, and a one-click LLM-judge evaluator. |
+
+The switch sits at the top right of either view and rewrites the URL, so both
+links are shareable. **The two views share one session**: run a pitch in the Hot
+Seat, flip to the Observatory, and the same verdict is there with its traces and
+token economics — flipping never costs an API call.
+
+The split is a UX boundary, not an authorisation one. Anyone can type
+`?mode=admin`; the Observatory only ever shows local, non-secret operational
+data, and the API key field is write-only.
+
+**Seating the panel.** The Observatory's *Partner seats* control decides who
+reviews the pitch: drop a partner to skip that line of attack and its API call.
+One seat means two calls per roast instead of four. The managing partner is not
+optional — it synthesises whoever sat and issues the term sheet.
+
+**Credit telemetry.** The voucher tracker counts only roasts run in this app, at
+list price, with no cache discount. `claude-opus-5-5` has no published
+per-token rate, so it is charged at the Opus tier and labelled as an assumption;
+set `PITCHROAST_PRICING` once you have confirmed the real number in the Console.
+
+### Module map
+
+| File | Role |
+| --- | --- |
+| `app.py` | Router, page shell, mode switch |
+| `founder.py` / `admin.py` | The two views |
+| `board.py` | Verdict rendering + the live run, shared by both |
+| `state.py` | Session state, operator settings, Phoenix bootstrap |
+| `costs.py` | Token → credit arithmetic |
+| `syndicate.py` / `observability.py` / `ui.py` | Engine, tracing, components |
 
 ---
 
@@ -101,7 +139,7 @@ Designed specifically for the 20:30 presentation at Epicenter:
    > *"Every founder in this room has pitched an investor and heard: 'Great deck, let's keep in touch!' That’s VC code for: 'This makes zero sense.' We built PitchRoast to eliminate polite lies."*
 2. **The Live Demo (0:25 - 1:25)**:
    > *Select one of the built-in presets (e.g., 'Autonomous Oat Milk Micro-Roastery with Web3 Proof-of-Foam').*  
-   > *Click 'Convene Committee'. Watch the three partners debate and read aloud Marc's market roast, Karen's financial reality check, and the satirical term sheet clauses.*
+   > *Click 'Convene Committee'. Watch the seated partners debate and read aloud Trip's market roast, Dagny's financial reality check, and the satirical term sheet clauses.*
 3. **The Tech (1:25 - 1:45)**:
    > *Explain the multi-agent committee architecture, structured JSON consensus schema, and instant real-time generation powered by Anthropic's frontier Claude models.*
 4. **The Closing Punchline (1:45 - 2:00)**:

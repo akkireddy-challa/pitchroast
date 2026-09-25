@@ -1,8 +1,9 @@
 """PitchRoast core engine — the autonomous venture syndicate.
 
-Four Claude-powered partners evaluate a startup pitch: three specialists debate
-in parallel, then a managing partner synthesises their verdicts into a scorecard
-and a satirical term sheet.
+Claude-powered partners evaluate a startup pitch: the specialists the founder
+seats debate in parallel, then a managing partner synthesises their verdicts
+into a scorecard and a satirical term sheet. Pass `convene(panel=[...])` to seat
+a subset of `PARTNERS`; the managing partner always closes.
 
 This module owns every Anthropic API call in the project. `app.py` (Streamlit)
 and `run_demo.py` (CLI) are both thin renderers over `convene()`.
@@ -13,7 +14,7 @@ from __future__ import annotations
 import logging
 import os
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 
@@ -71,15 +72,16 @@ class Partner:
 PARTNERS: tuple[Partner, ...] = (
     Partner(
         id="marc",
-        name="Marc Low-res",
+        name="Trip Hockeystick",
         title="General Partner",
         icon="trending_down",
         accent="#F87171",
         focus="Market delusions, TAM inflation, fake moats",
         emoji="🕶️",
         brief=(
-            "You are Marc Low-res, a General Partner at a Sand Hill Road fund, "
-            "evaluating this pitch.\n"
+            "You are Trip Hockeystick, a General Partner at a Sand Hill Road fund, "
+            "evaluating this pitch. You were named after the chart and you have never "
+            "recovered.\n"
             "Attack: inflated TAM (especially bottom-up numbers that quietly include "
             "the entire planet), 'we have no competitors', buzzword soup, and moats "
             "that are actually just a feature.\n"
@@ -91,15 +93,16 @@ PARTNERS: tuple[Partner, ...] = (
     ),
     Partner(
         id="karen",
-        name="Karen Burn-rate",
+        name="Dagny Downround",
         title="Quant CFO",
         icon="savings",
         accent="#60A5FA",
         focus="Unit economics, CAC vs LTV, runway",
-        emoji="📊",
+        emoji="📉",
         brief=(
-            "You are Karen Burn-rate, the fund's quantitative CFO, evaluating this "
-            "pitch.\n"
+            "You are Dagny Downround, the fund's quantitative CFO, evaluating this "
+            "pitch. You have priced more down rounds than up rounds and you consider "
+            "that a professional achievement.\n"
             "Attack: negative gross margins, CAC exceeding LTV, the cloud bill nobody "
             "modelled, and the runway maths that quietly assumes nobody gets paid.\n"
             "Voice: ice-cold and numeric. You quote specific figures even when you "
@@ -109,15 +112,16 @@ PARTNERS: tuple[Partner, ...] = (
     ),
     Partner(
         id="torvalds",
-        name="Torvalds-9000",
+        name="Kernel Panik",
         title="Systems CTO",
         icon="terminal",
         accent="#34D399",
         focus="AI wrappers, tech debt, latency, failure modes",
         emoji="💻",
         brief=(
-            "You are Torvalds-9000, the fund's technical partner, evaluating this "
-            "pitch.\n"
+            "You are Kernel Panik, the fund's technical partner, evaluating this "
+            "pitch. Yes, that is your real name. No, you will not be taking questions "
+            "about it.\n"
             "Attack: architectures that are one API call wrapped in Tailwind, "
             "accidental distributed systems, latency nobody measured, hallucination "
             "risk sold as a feature, and physics the pitch appears unaware of.\n"
@@ -130,19 +134,24 @@ PARTNERS: tuple[Partner, ...] = (
 
 SHARK = Partner(
     id="gekko",
-    name="Gordon Gekko AI",
+    name="Björn Liquidation",
     title="Managing Partner",
     icon="gavel",
     accent="#FBBF24",
     focus="Valuation haircut, term sheet, the pivot",
     emoji="🦈",
     brief=(
-        "You are Gordon Gekko AI, the managing partner who closes deals. Your three "
-        "partners have filed their verdicts. Synthesise them — do not merely repeat "
+        "You are Björn Liquidation, the managing partner who closes deals and whose "
+        "surname is the only clause in the term sheet that matters. The partners the "
+        "founder seated have filed their verdicts — however many that is, work only "
+        "from the ones in front of you. Synthesise them — do not merely repeat "
         "them — then issue the committee's scorecard and a satirical term sheet with "
         "genuinely absurd covenants.\n"
         "Voice: a ruthless dealmaker presenting a contract the founder is expected to "
-        "sign without reading. End on a closing line with real bite."
+        "sign without reading. End on a closing line with real bite — pointed at the "
+        "deal, the numbers or the deck, never at the founder as a person. 'This "
+        "business cannot count' lands; 'you cannot count' is a cheap shot and beneath "
+        "the fund."
     ),
 )
 
@@ -241,15 +250,45 @@ class Event:
 
 
 class SyndicateError(RuntimeError):
-    """Unrecoverable setup problem — no key, no client."""
+    """Unrecoverable setup problem — no key, no client, no panel."""
+
+
+def resolve_panel(partner_ids: Sequence[str] | None = None) -> tuple[Partner, ...]:
+    """Resolve founder-chosen partner ids into seats, in declared order.
+
+    `None` seats the full specialist panel. The managing partner is deliberately
+    not selectable: it does not review the pitch, it synthesises whoever sat, so
+    a run without it has nothing to close on.
+
+    Declared order is preserved regardless of the order ids arrive in, because
+    the UI renders one column per seat and the columns must not reshuffle
+    between the waiting state and the filed verdicts.
+    """
+    if partner_ids is None:
+        return PARTNERS
+
+    wanted = set(partner_ids)
+    unknown = wanted - {p.id for p in PARTNERS}
+    if unknown:
+        raise SyndicateError(f"Unknown partner id(s): {', '.join(sorted(unknown))}")
+
+    seats = tuple(p for p in PARTNERS if p.id in wanted)
+    if not seats:
+        raise SyndicateError("Seat at least one partner on the panel.")
+    return seats
 
 
 # --------------------------------------------------------------------------
 # Prompting
 # --------------------------------------------------------------------------
 
-# Frozen shared prefix. Kept byte-stable and marked with cache_control so the
-# three parallel partner calls read it from cache instead of paying three times.
+# Frozen shared prefix, kept byte-stable so it stays cacheable.
+#
+# NOTE: at ~190 tokens this sits well under the minimum cacheable prefix (1024
+# tokens on this model tier), so the cache_control breakpoint in _system_blocks
+# is currently a no-op — it has never produced a cache hit. It is left in place
+# because it costs nothing and starts working the moment this block grows past
+# the minimum. Do not cite it as a live cost saving.
 _HOUSE_RULES = """\
 You are a partner at PitchRoast, a satirical venture capital syndicate that \
 reviews startup pitches and tells founders the truth their real investors will \
@@ -282,7 +321,11 @@ def _brutality_clause(brutality: float) -> str:
 
 
 def _system_blocks(partner: Partner, brutality: float) -> list[dict]:
-    """Stable cached prefix first, volatile persona text after the breakpoint."""
+    """Stable prefix first, volatile persona text after the breakpoint.
+
+    Ordering matters even while the breakpoint is inert (see _HOUSE_RULES): it
+    keeps the layout correct for when the shared block grows past the minimum.
+    """
     return [
         {"type": "text", "text": _HOUSE_RULES, "cache_control": {"type": "ephemeral"}},
         {"type": "text", "text": f"{partner.brief}\n\n{_brutality_clause(brutality)}"},
@@ -325,7 +368,15 @@ def _client(api_key: str | None) -> anthropic.Anthropic:
         )
     # Pinned to the public API on purpose: the corporate LiteLLM proxy does not
     # carry these models and silently rewrites the model id.
-    return anthropic.Anthropic(api_key=key, base_url="https://api.anthropic.com")
+    # Explicit timeout/retries. The SDK defaults (600s, 2 retries) mean a hung
+    # call can hold the thread pool for ~30 minutes, and Ctrl-C cannot land
+    # until it returns. A stage demo needs to fail fast and stay interruptible.
+    return anthropic.Anthropic(
+        api_key=key,
+        base_url="https://api.anthropic.com",
+        timeout=90.0,
+        max_retries=1,
+    )
 
 
 def _thinking_text(response) -> str:
@@ -470,15 +521,17 @@ def convene(
     model: str = DEFAULT_MODEL,
     brutality: float = 0.85,
     effort: str = DEFAULT_EFFORT,
+    panel: Sequence[str] | None = None,
     on_event: Callable[[Event], None] | None = None,
     session_id: str | None = None,
 ) -> SyndicateResult:
-    """Convene the full committee on `pitch`.
+    """Convene the committee on `pitch`.
 
-    The three specialist partners run concurrently; the managing partner then
-    synthesises their actual output. A partner that fails is marked `recused`
-    and the session continues without it — only a total loss of the panel, or a
-    failure of the synthesis call itself, fails the run.
+    `panel` is the founder's choice of specialist partner ids; `None` seats all
+    of `PARTNERS`. The seated specialists run concurrently; the managing partner
+    then synthesises their actual output. A partner that fails is marked
+    `recused` and the session continues without it — only a total loss of the
+    panel, or a failure of the synthesis call itself, fails the run.
 
     The whole call is one `roast.session` trace in Phoenix, with a child span
     per agent. `session_id` groups repeat roasts of the same pitch; one is
@@ -488,6 +541,7 @@ def convene(
     if not pitch:
         raise SyndicateError("No pitch supplied.")
 
+    seats = resolve_panel(panel)
     client = _client(api_key)
     result = SyndicateResult(pitch=pitch, model=model, session_id=session_id or obs.new_session_id())
     started = time.perf_counter()
@@ -505,15 +559,20 @@ def convene(
         input_value=pitch,
         session_id=result.session_id,
         tags=["syndicate", model],
-        metadata={"model": model, "brutality": brutality, "effort": effort},
+        metadata={
+            "model": model,
+            "brutality": brutality,
+            "effort": effort,
+            "panel": [p.id for p in seats],
+        },
     ) as session_span:
         ctx = obs.capture_context()
 
-        # --- Stage 1: the three partners, in parallel ---
-        for p in PARTNERS:
+        # --- Stage 1: the seated specialists, in parallel ---
+        for p in seats:
             emit("partner_start", p)
 
-        with ThreadPoolExecutor(max_workers=len(PARTNERS)) as pool:
+        with ThreadPoolExecutor(max_workers=len(seats)) as pool:
             futures = {
                 pool.submit(
                     _run_partner,
@@ -526,7 +585,7 @@ def convene(
                     session_id=result.session_id,
                     parent_context=ctx,
                 ): p
-                for p in PARTNERS
+                for p in seats
             }
             done: dict[str, PartnerResult] = {}
             for future in as_completed(futures):
@@ -535,7 +594,7 @@ def convene(
                 emit("partner_done", pr.partner, pr)
 
         # Preserve declared render order regardless of completion order.
-        result.partners = [done[p.id] for p in PARTNERS]
+        result.partners = [done[p.id] for p in seats]
         for pr in result.partners:
             result.input_tokens += pr.input_tokens
             result.output_tokens += pr.output_tokens
@@ -724,6 +783,7 @@ __all__ = [
     "SyndicateResult",
     "TermSheet",
     "convene",
+    "resolve_panel",
     "setup_observability",
     "term_sheet_text",
 ]

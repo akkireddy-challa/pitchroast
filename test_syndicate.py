@@ -134,6 +134,36 @@ def main() -> int:
     # Serial would be ~1.6s (3 partners + shark). Parallel partners ≈ 0.8s.
     check("partners ran concurrently", elapsed < 1.2, f"took {elapsed:.2f}s, expected <1.2s")
 
+    print("\nFounder-chosen panel")
+    check("None seats the full panel", s.resolve_panel(None) == s.PARTNERS)
+    check(
+        "declared order wins over argument order",
+        [p.id for p in s.resolve_panel(["torvalds", "marc"])] == ["marc", "torvalds"],
+    )
+    check("duplicates collapse to one seat", len(s.resolve_panel(["marc", "marc"])) == 1)
+    for bad, label in ((["nobody"], "unknown id rejected"), ([], "empty panel rejected")):
+        try:
+            s.resolve_panel(bad)
+            check(label, False, "no exception raised")
+        except s.SyndicateError:
+            check(label, True)
+
+    events = []
+    r = run("solo", fake_call_factory(), panel=["karen"], on_event=lambda e: events.append(e.kind))
+    check("only the chosen partner ran", [p.partner.id for p in r.partners] == ["karen"])
+    check("one partner start emitted", events.count("partner_start") == 1)
+    check("shark still closed", r.ok)
+    # The cost claim the sidebar makes: seats + 1 call, not the full panel.
+    check("2 calls billed, not 4", r.total_tokens == 2 * 300, f"got {r.total_tokens}")
+
+    r = run("two-seats", fake_call_factory(), panel=["torvalds", "marc"])
+    check("subset renders in declared order", [p.partner.id for p in r.partners] == ["marc", "torvalds"])
+    briefing = s._shark_briefing("the pitch", r.seated)
+    check("shark briefed on seated only", s.PARTNERS_BY_ID["karen"].name not in briefing)
+
+    r = run("solo-fails", fake_call_factory(fail={"karen"}), panel=["karen"])
+    check("sole partner failing kills the run", r.shark is None and bool(r.error))
+
     print("\nGuards")
     try:
         s.convene("   ", api_key="k")
@@ -157,7 +187,16 @@ def main() -> int:
     check("shark sees verbatim critiques", "Your TAM includes tap water." in briefing)
     check("shark sees all three partners", all(p.name in briefing for p in s.PARTNERS))
     blocks = s._system_blocks(s.PARTNERS[0], 0.95)
-    check("shared prefix is cached", blocks[0].get("cache_control") == {"type": "ephemeral"})
+    check("cache breakpoint on shared block", blocks[0].get("cache_control") == {"type": "ephemeral"})
+    # The breakpoint above is inert until the shared block clears the model's
+    # minimum cacheable prefix. Assert the real state so nobody claims a cost
+    # saving that isn't happening; flip the comparison when it grows.
+    approx_tokens = len(s._HOUSE_RULES) // 4
+    check(
+        "shared prefix still below the 1024-token cache minimum (breakpoint is a no-op)",
+        approx_tokens < 1024,
+        f"~{approx_tokens} tokens",
+    )
     check("volatile text after breakpoint", "cache_control" not in blocks[1])
     check("brutality is prompt text", "0.95" in blocks[1]["text"])
 

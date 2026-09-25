@@ -211,7 +211,10 @@ def trace_url(tracing: Tracing | None) -> str | None:
 
 def status() -> Tracing:
     """Current tracing state without starting anything."""
-    return _STATE or Tracing(project=project_name(), detail="not initialised")
+    # Explicit `is None`, not `or`: a disabled Tracing is falsy by design, so
+    # `_STATE or ...` would discard the real (disabled) state and report
+    # "not initialised" for a setup that ran and failed.
+    return Tracing(project=project_name(), detail="not initialised") if _STATE is None else _STATE
 
 
 def reset() -> None:

@@ -24,8 +24,10 @@ Two hard rules, both guarding live defects:
    (partner names, accents, icons) — and those are escaped anyway.
 2. No `use_container_width`; it is deprecated. Widths use `width="stretch"`.
 
-Run `streamlit run ui.py` for a live gallery of every component with fake data —
-no API key and no network required.
+This module is imported, never run. `streamlit run app.py` is the only
+entrypoint; there used to be a second one here (a component gallery with fake
+data) and having two runnable Streamlit files meant the demo could be started
+on the wrong one. Component behaviour is covered by `test_ui.py` instead.
 """
 
 from __future__ import annotations
@@ -483,123 +485,3 @@ def verdict_stamp(funded: bool) -> None:
         f'<div class="pr-stamp" style="--pr-stamp: {colour};">{escape(label)}</div>'
         f"</div>"
     )
-
-
-# --------------------------------------------------------------------------
-# Preview harness — `streamlit run ui.py`
-# --------------------------------------------------------------------------
-
-
-def _preview() -> None:
-    """Render every component with fake data. No API key, no network."""
-    import time
-    from dataclasses import dataclass
-
-    from syndicate import ALL_PARTNERS, PARTNERS
-
-    st.set_page_config(page_title="PitchRoast UI gallery", page_icon="🔥", layout="wide")
-    inject_flair(ALL_PARTNERS)
-
-    hero(status="UI gallery · fake data · no API key")
-
-    @dataclass
-    class _V:
-        critique: str
-        zinger: str
-        delusion_index: int
-        moat_score: int
-        runway_months: int
-
-    @dataclass
-    class _R:
-        partner: Any
-        verdict: Any = None
-        recused: bool = False
-        error: str | None = None
-        latency_s: float = 0.0
-        input_tokens: int = 0
-        output_tokens: int = 0
-
-    samples = [
-        _V(
-            "Your bottom-up TAM quietly includes every human with a kitchen, and "
-            "the moat you describe is a Tailwind theme with a waitlist attached.",
-            "You have built a landing page with a burn rate.",
-            94, 1, 3,
-        ),
-        _V(
-            "CAC exceeds LTV by roughly 40x and the cloud bill appears nowhere in "
-            "the model. The runway maths quietly assumes nobody on the team is paid.",
-            "This is a charity with a Stripe account.",
-            88, 2, 2,
-        ),
-        _V(
-            "It is one API call wrapped in a spinner. You have invented an "
-            "accidental distributed system and measured none of its latency.",
-            "I rewrote this in Rust during your intro slide.",
-            91, 1, 4,
-        ),
-    ]
-    filed = [_R(p, v, latency_s=4.2 + i, input_tokens=1840, output_tokens=420)
-             for i, (p, v) in enumerate(zip(PARTNERS, samples, strict=False))]
-
-    st.subheader("The live boardroom")
-    st.caption(
-        "Press the button to watch the seats fill in the way they do during a "
-        "real `convene()` run, driven by the `on_event` callback."
-    )
-
-    if st.button("Convene committee", type="primary", icon=":material/gavel:"):
-        # Exercises the full waiting -> running -> done lifecycle through a
-        # single st.empty() per partner. This is the exact sequence that raises
-        # StreamlitDuplicateElementKey if the key is not namespaced per status,
-        # so the preview doubles as a regression test for it.
-        slots = [c.empty() for c in st.columns(len(PARTNERS))]
-        for slot, p in zip(slots, PARTNERS, strict=False):
-            with slot.container():
-                pending_card(p, status="waiting")
-        for slot, p in zip(slots, PARTNERS, strict=False):
-            with slot.container():
-                pending_card(p, status="running")
-        for slot, r in zip(slots, filed, strict=False):
-            time.sleep(1.1)  # stands in for the partner's API call
-            with slot.container():
-                partner_card(r)
-    else:
-        cols = st.columns(len(PARTNERS))
-        for col, r in zip(cols, filed, strict=False):
-            with col:
-                partner_card(r)
-
-    st.subheader("Waiting seat vs. filed verdict")
-    a, b = st.columns(2)
-    with a:
-        # Distinct keys: this seat is a second copy of a partner already drawn
-        # above, and Streamlit requires element keys to be unique per page.
-        pending_card(PARTNERS[0], key="partner_preview_waiting")
-    with b:
-        partner_card(filed[0], key="partner_preview_filed")
-
-    st.subheader("Recused partner")
-    partner_card(
-        _R(PARTNERS[1], None, recused=True,
-           error="Declined to review this pitch (policy)."),
-        key="partner_preview_recused",
-    )
-
-    st.subheader("Scorecard and stamp")
-
-    @dataclass
-    class _S:
-        delusion_index: int = 93
-        moat_score: int = 1
-        runway_months: int = 3
-        pre_money_val: str = "$14.50 and a cold kanelbulle"
-
-    scorecard(_S())
-    verdict_stamp(funded=False)
-    verdict_stamp(funded=True)
-
-
-if __name__ == "__main__":
-    _preview()

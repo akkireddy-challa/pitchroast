@@ -29,6 +29,8 @@ dependencies = [
 obs = [
     "arize-phoenix>=20.16,<21",                       # installed: 20.16.0
     "openinference-instrumentation-anthropic>=2.1.6,<3",  # installed: 2.1.6
+    "arize-phoenix-evals>=3.9,<4",                        # installed: 3.9.0
+    "arize-phoenix-client>=3.5,<4",                       # installed: 3.5.0
 ]
 
 # Tooling only - never imported by the app.
@@ -41,7 +43,9 @@ dev = [
 # test_connection.py are entry-point scripts run from the repo root, so they are
 # deliberately NOT installed (a site-packages module called "app" would be a
 # collision waiting to happen).
-py-modules = ["syndicate"]
+# observability is imported at module scope by syndicate, so an installed
+# syndicate without it is broken. Both must ship.
+py-modules = ["syndicate", "observability"]
 
 [tool.ruff]
 target-version = "py312"
