@@ -4,5 +4,11 @@
     "ANTHROPIC_BASE_URL": "https://api.anthropic.com",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "0",
     "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "0"
-  }
+  },
+  "disabledMcpjsonServers": [
+    "grafana-prod-se-mcp",
+    "confluence",
+    "github",
+    "phoenix"
+  ]
 }
