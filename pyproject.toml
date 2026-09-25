@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pitchroast"
+version = "1.0.0"
+description = "PitchRoast - a satirical autonomous venture committee that roasts your startup pitch."
+readme = "README.md"
+requires-python = ">=3.12"
+
+# Runtime dependencies: everything the app needs to produce a verdict.
+# Pinned compatibly against the versions that are known to work in .venv
+# (python 3.12.14) so a fresh clone reproduces this machine.
+dependencies = [
+    "anthropic>=1.8.0,<2",      # installed: 1.8.0
+    "streamlit>=1.64,<2",       # installed: 1.64.0
+    "pydantic>=2.13,<3",        # installed: 2.13.5
+    "python-dotenv>=1.2,<2",    # installed: 1.2.3
+]
+
+[project.optional-dependencies]
+# Observability is OPTIONAL on purpose. app.py / run_demo.py wrap the Phoenix
+# import in try/except and degrade to "no tracing" when it is absent, so a
+# venue-wifi install can skip ~100 transitive packages with:
+#     uv pip install -e .
+# Install the traced setup (what the demo uses) with:
+#     uv pip install -e ".[obs]"
+obs = [
+    "arize-phoenix>=20.16,<21",                       # installed: 20.16.0
+    "openinference-instrumentation-anthropic>=2.1.6,<3",  # installed: 2.1.6
+]
+
+# Tooling only - never imported by the app.
+dev = [
+    "ruff>=0.16.9,<0.17",       # installed: 0.16.9 (pre-1.0: cap the minor)
+]
+
+[tool.setuptools]
+# Flat layout: the engine is a single top-level module. app.py / run_demo.py /
+# test_connection.py are entry-point scripts run from the repo root, so they are
+# deliberately NOT installed (a site-packages module called "app" would be a
+# collision waiting to happen).
+py-modules = ["syndicate"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+# E/F/W  - pycodestyle + pyflakes baseline
+# I      - import sorting
+# UP     - pyupgrade, kept honest by target-version = py312
+# B      - bugbear
+# C4     - comprehensions
+# SIM    - simplifications
+# BLE    - blind-except. The "# noqa: BLE001" comments in syndicate.py and
+#          run_demo.py mark handlers that are broad on purpose (one failing
+#          partner must not kill the run, tracing must never break the demo),
+#          and selecting BLE is what makes those suppressions meaningful
+#          rather than dead comments.
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "BLE", "RUF"]
+ignore = [
+    # Long lines are inline CSS/HTML blobs in the Streamlit layout; not worth
+    # reflowing during a hackathon.
+    "E501",
+    # RUF100 (unused noqa) must stay off. Ruff exempts an `except Exception`
+    # from BLE001 when the handler logs the exception (logger.*(exc) or
+    # exc_info=True), which is exactly what syndicate.py does - so the three
+    # deliberate "# noqa: BLE001" directives there look "unused" to RUF100 even
+    # though BLE is selected. They are load-bearing documentation of intent and
+    # a guard for anyone who edits those handlers; keep them, drop the rule.
+    "RUF100",
+]

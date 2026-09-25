@@ -5,3 +5,14 @@ __pycache__/
 .ruff_cache/
 .pytest_cache/
 .DS_Store
+
+# Arize Phoenix local trace data (default working dir is ~/.phoenix, but a
+# repo-local PHOENIX_WORKING_DIR or temp store lands here).
+.phoenix/
+phoenix.db
+phoenix.db-*
+
+# Build artifacts from `pip/uv pip install -e .`
+*.egg-info/
+build/
+dist/

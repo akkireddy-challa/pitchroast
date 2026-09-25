@@ -1,0 +1,54 @@
+# PitchRoast stage theme — dark boardroom, fire accent.
+# Colours live here rather than in CSS so they apply consistently to every
+# native element. The only CSS in app.py is the motion the demo calls for.
+
+[server]
+port = 8501
+headless = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "dark"
+
+# 5.18:1 against the white text Streamlit puts on primary buttons.
+primaryColor = "#C2410C"
+backgroundColor = "#0B1120"
+secondaryBackgroundColor = "#151E32"
+textColor = "#E2E8F0"
+linkColor = "#FB923C"
+borderColor = "#24314D"
+codeBackgroundColor = "#0F172A"
+codeTextColor = "#FDBA74"
+
+baseRadius = "12px"
+buttonRadius = "10px"
+showWidgetBorder = true
+showSidebarBorder = true
+linkUnderline = false
+
+font = "'Plus Jakarta Sans':https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+headingFont = "'Plus Jakarta Sans':https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap"
+baseFontSize = 15
+codeFontSize = "0.85rem"
+headingFontSizes = ["34px", "24px", "19px", "16px", "14px", "13px"]
+headingFontWeights = [800, 700, 700, 600, 600, 600]
+
+# Partner accents: Marc red, Karen blue, Torvalds green, Gekko amber.
+redColor = "#F87171"
+orangeColor = "#FB923C"
+yellowColor = "#FBBF24"
+greenColor = "#34D399"
+blueColor = "#60A5FA"
+violetColor = "#A78BFA"
+grayColor = "#94A3B8"
+
+chartCategoricalColors = ["#F87171", "#60A5FA", "#34D399", "#FBBF24", "#A78BFA", "#FB923C", "#94A3B8"]
+
+[theme.sidebar]
+backgroundColor = "#080D18"
+secondaryBackgroundColor = "#151E32"
+codeBackgroundColor = "#0B1120"
+borderColor = "#24314D"

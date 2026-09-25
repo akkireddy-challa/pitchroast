@@ -1,486 +1,563 @@
+"""PitchRoast — a satirical AI venture committee that roasts your startup pitch.
+
+All model orchestration lives in ``syndicate.py``. This file is the Streamlit
+surface only: controls, live progress, and rendering of a ``SyndicateResult``.
+
+Model-produced text is never rendered as HTML. Every string that came back from
+the API goes through a native element (``st.markdown`` with HTML disabled,
+``st.metric``, ``st.badge``, ``st.caption``), so there is no injection surface.
+The only custom HTML in the app is the static hero banner below.
+"""
+
+from __future__ import annotations
+
+import logging
 import os
 
 import streamlit as st
 from dotenv import load_dotenv
 
-from syndicate import evaluate_pitch
+from syndicate import (
+    DEFAULT_MODEL,
+    MODELS,
+    PARTNERS,
+    SHARK,
+    Event,
+    Partner,
+    PartnerResult,
+    SyndicateError,
+    SyndicateResult,
+    convene,
+    setup_observability,
+    term_sheet_text,
+)
+from ui import hero, inject_flair, slot_key, verdict_stamp
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-# Page configuration
 st.set_page_config(
-    page_title="PitchRoast 🔥 | Autonomous VC Syndicate",
-    page_icon="🔥",
+    page_title="PitchRoast — autonomous VC syndicate",
+    page_icon=":material/local_fire_department:",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
-# World-Class Dark Theme, Glassmorphism, and CSS Keyframe Animations
-st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+# Motion only (keyframes scoped to .st-key-* classes). Colour, fonts and radii
+# stay in .streamlit/config.toml; this decorates the native containers rather
+# than replacing them. Implements the interactions named in SPEC.md §2.
+inject_flair()
 
-    html, body, [class*="css"] {
-        font-family: 'Plus+Jakarta Sans', sans-serif;
-    }
 
-    /* Keyframe Animations */
-    @keyframes pulseGlow {
-        0% { box-shadow: 0 0 15px rgba(255, 69, 0, 0.2); }
-        50% { box-shadow: 0 0 30px rgba(255, 69, 0, 0.5); }
-        100% { box-shadow: 0 0 15px rgba(255, 69, 0, 0.2); }
-    }
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
 
-    @keyframes flameFlicker {
-        0%, 100% { transform: scale(1) rotate(0deg); }
-        25% { transform: scale(1.05) rotate(-2deg); }
-        75% { transform: scale(0.97) rotate(2deg); }
-    }
-
-    @keyframes ledBlink {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.4; transform: scale(0.85); }
-    }
-
-    @keyframes slideUpFade {
-        from { opacity: 0; transform: translateY(18px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .hero-container {
-        text-align: center;
-        padding: 2.2rem 1.5rem 1.8rem 1.5rem;
-        background: radial-gradient(circle at 50% 0%, rgba(255, 69, 0, 0.18) 0%, rgba(15, 23, 42, 0.6) 75%);
-        border-radius: 20px;
-        margin-bottom: 1.8rem;
-        border: 1px solid rgba(255, 69, 0, 0.3);
-        animation: pulseGlow 4s infinite ease-in-out;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .hero-icon {
-        display: inline-block;
-        font-size: 3rem;
-        animation: flameFlicker 2.5s infinite ease-in-out;
-        margin-bottom: 0.2rem;
-    }
-
-    .hero-title {
-        font-size: 3rem;
-        font-weight: 800;
-        background: linear-gradient(90deg, #FF4500 0%, #FF8C00 50%, #FFD700 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.4rem;
-        letter-spacing: -0.035em;
-    }
-
-    .hero-subtitle {
-        color: #CBD5E1;
-        font-size: 1.18rem;
-        font-weight: 500;
-        max-width: 760px;
-        margin: 0 auto 0.8rem auto;
-        line-height: 1.5;
-    }
-
-    .live-status-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(16, 185, 129, 0.12);
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        color: #34D399;
-        padding: 0.35rem 0.9rem;
-        border-radius: 999px;
-        font-size: 0.82rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-    }
-
-    .led-dot {
-        width: 8px;
-        height: 8px;
-        background-color: #10B981;
-        border-radius: 50%;
-        box-shadow: 0 0 8px #10B981;
-        animation: ledBlink 1.8s infinite ease-in-out;
-    }
-
-    /* Agent Card Styling */
-    .agent-card {
-        background: rgba(30, 41, 59, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 16px;
-        padding: 1.4rem;
-        height: 100%;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-        transition: transform 0.25s ease, border-color 0.25s ease;
-        animation: slideUpFade 0.6s ease-out;
-    }
-    .agent-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(255, 69, 0, 0.5);
-    }
-
-    .agent-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 0.8rem;
-    }
-
-    .agent-badge {
-        display: inline-block;
-        padding: 0.25rem 0.65rem;
-        border-radius: 8px;
-        font-size: 0.72rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-    }
-    .badge-gp { background: rgba(239, 68, 68, 0.2); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.4); }
-    .badge-cfo { background: rgba(59, 130, 246, 0.2); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.4); }
-    .badge-cto { background: rgba(16, 185, 129, 0.2); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.4); }
-    
-    .agent-name {
-        font-size: 1.15rem;
-        font-weight: 800;
-        color: #F8FAFC;
-        margin-top: 0.2rem;
-    }
-    .agent-title {
-        font-size: 0.8rem;
-        color: #94A3B8;
-        font-weight: 500;
-        margin-bottom: 0.9rem;
-    }
-
-    /* Term Sheet & Stamp */
-    .stamp-badge {
-        display: inline-block;
-        border: 3px solid #EF4444;
-        color: #EF4444;
-        font-weight: 900;
-        font-size: 1.3rem;
-        text-transform: uppercase;
-        padding: 0.4rem 1.2rem;
-        border-radius: 8px;
-        transform: rotate(-5deg);
-        letter-spacing: 0.12em;
-        box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
-        margin-bottom: 1.2rem;
-    }
-
-    .metric-gauge-card {
-        background: rgba(15, 23, 42, 0.85);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
-        padding: 1.1rem;
-        text-align: center;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    }
-    .metric-value-huge {
-        font-size: 2.2rem;
-        font-weight: 900;
-        letter-spacing: -0.02em;
-        margin: 0.2rem 0;
-    }
-    .metric-label-sub {
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        color: #94A3B8;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Observability Init
-@st.cache_resource
-def setup_observability():
-    """Initializes Arize Phoenix OSS tracing locally without consuming external API credits."""
-    try:
-        import phoenix as px
-        from openinference.instrumentation.anthropic import AnthropicInstrumentor
-
-        session = px.launch_app(run_in_thread=True)
-        AnthropicInstrumentor().instrument()
-        return session.url
-    except Exception:  # noqa: BLE001
-        return None
-
-phoenix_url = setup_observability()
-
-# Hero Header
-st.markdown("""
-<div class="hero-container">
-    <div class="hero-icon">🔥</div>
-    <div class="hero-title">PitchRoast Syndicate</div>
-    <div class="hero-subtitle">Four autonomous AI venture partners debate, dismantle, and deliver the brutal truth no VC says to your face.</div>
-    <div class="live-status-pill">
-        <div class="led-dot"></div>
-        Autonomous Committee Ready • Stockholm Build Day
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# Model configuration mapping
-MODEL_MAP = {
-    "⚡ Claude Fable 5.1 (Fast & Token-Efficient — Recommended for Testing)": "claude-fable-5-1",
-    "🧠 Claude Opus 5.5 (Deep Extended Thinking — Best for Final Demo)": "claude-opus-5-5",
-    "🏛️ Claude Opus 5 (Classic Frontier)": "claude-opus-5"
+PRESETS: dict[str, str] = {
+    "☕ Autonomous Oat Milk Micro-Roastery with Web3 Proof-of-Foam": (
+        "A decentralized network of countertop espresso machines that roast "
+        "small-batch Nordic oat milk using on-chain temperature consensus. "
+        "Users stake OAT tokens for latte art NFTs. Market size: $400B "
+        "addressable beverage space."
+    ),
+    "🤖 AI Meeting Proxy that says 'Blocked by Backend' in 14 accents": (
+        "An autonomous AI agent avatar that joins daily Scrum standups on "
+        "Zoom/Teams, randomly sighs, checks its phone, and responds 'I am "
+        "blocked by the infrastructure backend' whenever your name is called. "
+        "B2B SaaS priced at $49/engineer/month."
+    ),
+    "🐾 Uber for Cats: Feline Scooter On-Demand": (
+        "High-density urban cat affection. When an office worker feels burnt "
+        "out, our app dispatches an autonomous electric scooter carrying a "
+        "pre-vetted emotional support cat to their office lobby for a "
+        "15-minute petting session."
+    ),
+    "🍕 Tinder for Leftover Pizza: Peer-to-Peer Slice Swapping": (
+        "A location-based peer-to-peer marketplace where college students "
+        "swipe right on half-eaten pizza slices in nearby dorm rooms. Powered "
+        "by zero-knowledge crust verification."
+    ),
 }
 
-# Sidebar
+MODEL_LABELS: list[str] = list(MODELS)
+DEFAULT_MODEL_INDEX: int = next(
+    (i for i, label in enumerate(MODEL_LABELS) if MODELS[label] == DEFAULT_MODEL),
+    0,
+)
+
+# The single piece of custom HTML in the app: a static hero banner. It contains
+# no interpolation, so nothing model-derived can reach the DOM here.
+HERO = """
+<style>
+  .pr-hero {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 2rem 1.5rem 1.6rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid rgba(255, 69, 0, 0.32);
+    border-radius: 18px;
+    background:
+      radial-gradient(120% 140% at 50% 0%, rgba(255, 69, 0, 0.20) 0%, rgba(11, 15, 25, 0) 70%),
+      linear-gradient(180deg, rgba(20, 26, 39, 0.9) 0%, rgba(11, 15, 25, 0.9) 100%);
+  }
+  .pr-hero__kicker {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #FFB627;
+    opacity: 0.85;
+  }
+  .pr-hero__title {
+    font-size: clamp(2.2rem, 5vw, 3.1rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+    margin: 0.35rem 0 0.5rem;
+    background: linear-gradient(90deg, #FF4500 0%, #FF8C00 50%, #FFD700 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .pr-hero__sub {
+    max-width: 760px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: #C3CCDB;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pr-hero { animation: pr-ember 5s ease-in-out infinite; }
+    @keyframes pr-ember {
+      0%, 100% { box-shadow: 0 0 18px rgba(255, 69, 0, 0.16); }
+      50%      { box-shadow: 0 0 34px rgba(255, 69, 0, 0.38); }
+    }
+  }
+</style>
+<div class="pr-hero">
+  <div class="pr-hero__kicker">Autonomous venture committee</div>
+  <div class="pr-hero__title">PitchRoast 🔥</div>
+  <div class="pr-hero__sub">
+    Three AI partners tear your pitch apart in parallel. Then the shark
+    reconciles the scorecard and writes a term sheet you did not ask for.
+  </div>
+</div>
+"""
+
+
+# ---------------------------------------------------------------------------
+# Observability (cached so Streamlit reruns never launch a second Phoenix)
+# ---------------------------------------------------------------------------
+
+
+@st.cache_resource(show_spinner=False)
+def phoenix_url() -> str | None:
+    """Start local Phoenix tracing once per server process."""
+    return setup_observability()
+
+
+# ---------------------------------------------------------------------------
+# Session state
+# ---------------------------------------------------------------------------
+
+st.session_state.setdefault("pitch_text", "")
+st.session_state.setdefault("result", None)
+st.session_state.setdefault("setup_error", None)
+
+
+def load_preset() -> None:
+    """Copy the chosen demo pitch into the text area."""
+    label = st.session_state.get("preset_choice")
+    if label:
+        st.session_state.pitch_text = PRESETS[label]
+
+
+def clear_all() -> None:
+    """Reset the pitch and any previous verdict."""
+    st.session_state.pitch_text = ""
+    st.session_state.preset_choice = None
+    st.session_state.result = None
+    st.session_state.setup_error = None
+
+
+# ---------------------------------------------------------------------------
+# Rendering helpers — native elements only, no HTML
+# ---------------------------------------------------------------------------
+
+
+def draw_thinking(thinking: str, label: str) -> None:
+    """Compact reasoning drawer. Stays silent when there is nothing to show."""
+    if not thinking.strip():
+        return
+    with st.expander(label, type="compact", icon=":material/psychology:"):
+        st.markdown(thinking)
+
+
+def draw_partner(
+    slot,
+    partner: Partner,
+    result: PartnerResult | None = None,
+    *,
+    status: str = "waiting",
+) -> None:
+    """Render (or re-render) one partner card into a reserved placeholder."""
+    # Key must be namespaced by status, not just partner: this slot is drawn up
+    # to three times per script run (waiting -> running -> done) and Streamlit
+    # raises StreamlitDuplicateElementKey on a repeated key within one run, even
+    # when the second render replaces the first inside the same st.empty().
+    with slot.container(border=True, height="stretch", key=slot_key(partner, status)):
+        st.markdown(f":material/{partner.icon}: **{partner.name}**")
+        st.caption(partner.title)
+
+        if status == "waiting":
+            st.badge("Queued", icon=":material/hourglass_empty:", color="gray")
+            st.caption(partner.focus)
+            return
+
+        if status == "running":
+            st.markdown(":shimmer[Reading the pitch…]")
+            st.caption(partner.focus)
+            return
+
+        if result is None:
+            st.badge("No response", icon=":material/help:", color="gray")
+            st.caption(partner.focus)
+            return
+
+        if result.recused:
+            st.badge("Recused", icon=":material/person_off:", color="gray")
+            st.markdown(f":gray[{result.error or 'Declined to vote on this one.'}]")
+            return
+
+        if result.verdict is None:
+            st.badge("Errored", icon=":material/error:", color="red")
+            st.markdown(f":gray[{result.error or 'No verdict returned.'}]")
+            return
+
+        verdict = result.verdict
+        st.badge("Voted", icon=":material/how_to_vote:", color="orange")
+        st.markdown(verdict.critique)
+        st.markdown(f"*“{verdict.zinger}”*")
+
+        with st.container(horizontal=True):
+            st.badge(f"Delusion {verdict.delusion_index}%", color="red")
+            st.badge(f"Moat {verdict.moat_score}/10", color="orange")
+            st.badge(f"Runway {verdict.runway_months} mo", color="blue")
+
+        draw_thinking(result.thinking, "Partner deliberation")
+        st.caption(
+            f"{result.latency_s:.1f}s · {result.input_tokens:,} in / "
+            f"{result.output_tokens:,} out"
+        )
+
+
+def draw_scorecard(result: SyndicateResult) -> None:
+    """The shark's four reconciled headline numbers."""
+    verdict = result.shark
+    if verdict is None:
+        return
+    cols = st.columns(4)
+    cols[0].metric(
+        "Delusion index",
+        f"{verdict.delusion_index}%",
+        border=True,
+        height="stretch",
+        help="Gap between the founder's claims and observable reality.",
+    )
+    cols[1].metric(
+        "Moat score",
+        f"{verdict.moat_score}/10",
+        border=True,
+        height="stretch",
+        help="Resistance to being cloned over a weekend.",
+    )
+    cols[2].metric(
+        "Runway",
+        f"{verdict.runway_months} mo",
+        border=True,
+        height="stretch",
+        help="Months before an emergency bridge round.",
+    )
+    with cols[3].container(border=True, height="stretch"):
+        st.caption("Pre-money valuation")
+        st.markdown(f"**{verdict.pre_money_val}**")
+
+
+def draw_term_sheet(result: SyndicateResult) -> None:
+    """Deal terms, covenants, the pivot, and the .txt export."""
+    verdict = result.shark
+    if verdict is None:
+        return
+    sheet = verdict.term_sheet
+
+    with st.container(border=True):
+        st.markdown("**Non-binding term sheet**")
+        verdict_stamp(verdict.funded)
+        cols = st.columns(3)
+        terms = (
+            ("Valuation", sheet.valuation),
+            ("Investment", sheet.investment_amount),
+            ("Liquidation preference", sheet.liquidation_pref),
+        )
+        for col, (label, value) in zip(cols, terms, strict=True):
+            with col.container(border=True, height="stretch"):
+                st.caption(label)
+                st.markdown(f"**{value}**")
+
+        st.caption("Mandatory founder covenants")
+        for index, covenant in enumerate(sheet.covenants, start=1):
+            st.markdown(f"{index}\\. {covenant}")
+
+    st.info(verdict.the_pivot, icon=":material/lightbulb:")
+
+    export = term_sheet_text(result)
+    st.download_button(
+        "Download term sheet",
+        data=export,
+        file_name="pitchroast_term_sheet.txt",
+        mime="text/plain",
+        icon=":material/download:",
+    )
+    with st.expander("Plain-text term sheet", icon=":material/description:"):
+        st.code(export, language="text", wrap_lines=True)
+
+
+def draw_shark(slot, result: SyndicateResult) -> None:
+    """Render the managing partner's synthesis into a reserved placeholder."""
+    with slot.container(border=True):
+        st.markdown(f":material/{SHARK.icon}: **{SHARK.name}**")
+        st.caption(SHARK.title)
+
+        verdict = result.shark
+        if verdict is None:
+            st.badge("No synthesis", icon=":material/error:", color="red")
+            if not result.error:
+                st.caption("The managing partner returned no verdict.")
+            return
+
+        if verdict.funded:
+            st.success("Term sheet offered", icon=":material/handshake:")
+        else:
+            st.error("Rejected by the syndicate", icon=":material/gavel:")
+
+        st.markdown(f"*“{verdict.closing_line}”*")
+        draw_thinking(result.shark_thinking, "Managing partner deliberation")
+
+        st.subheader("Scorecard", icon=":material/scoreboard:")
+        draw_scorecard(result)
+
+        st.subheader("Deal terms", icon=":material/contract:")
+        draw_term_sheet(result)
+
+
+def draw_result(result: SyndicateResult) -> None:
+    """Full, rerun-safe render of a stored SyndicateResult."""
+    if result.refused:
+        st.warning(
+            "The committee has declined to take this meeting.",
+            icon=":material/gavel:",
+        )
+        st.caption(
+            result.refusal_reason
+            or "Reword the pitch and the partners will reconvene."
+        )
+        return
+
+    st.subheader("The boardroom debate", icon=":material/forum:")
+    by_id = {item.partner.id: item for item in result.partners}
+    cols = st.columns(len(PARTNERS))
+    for col, partner in zip(cols, PARTNERS, strict=True):
+        draw_partner(col.empty(), partner, by_id.get(partner.id), status="done")
+
+    st.subheader("Managing partner's verdict", icon=":material/gavel:")
+    if result.shark is None and result.error:
+        st.error(result.error, icon=":material/error:")
+        st.caption("Check the API key and remaining credits, then convene again.")
+    draw_shark(st.empty(), result)
+
+    st.caption(
+        f":material/bolt: {result.total_tokens:,} tokens "
+        f"({result.input_tokens:,} in / {result.output_tokens:,} out) · "
+        f"{result.latency_s:.1f}s · model `{result.model}`"
+    )
+
+
+def run_committee(pitch: str, api_key: str, model_id: str, brutality: float) -> None:
+    """Reserve the card slots, stream progress into them, then persist the result."""
+    st.subheader("The boardroom debate", icon=":material/forum:")
+    cols = st.columns(len(PARTNERS))
+    slots = {}
+    for col, partner in zip(cols, PARTNERS, strict=True):
+        slot = col.empty()
+        draw_partner(slot, partner, status="waiting")
+        slots[partner.id] = slot
+
+    st.subheader("Managing partner's verdict", icon=":material/gavel:")
+    shark_slot = st.empty()
+    shark_slot.markdown(":shimmer[Waiting on the partners…]")
+
+    def on_event(event: Event) -> None:
+        # Best effort. convene() runs the three partners concurrently, so this
+        # may be invoked off the main script thread where st.* calls are inert.
+        # The authoritative render happens from session state after the rerun.
+        try:
+            if event.kind == "partner_start" and event.partner is not None:
+                draw_partner(slots[event.partner.id], event.partner, status="running")
+            elif event.kind == "partner_done" and event.result is not None:
+                draw_partner(
+                    slots[event.result.partner.id],
+                    event.result.partner,
+                    event.result,
+                    status="done",
+                )
+            elif event.kind == "shark_start":
+                shark_slot.markdown(f":shimmer[{SHARK.name} is drafting the terms…]")
+            elif event.kind == "shark_done":
+                shark_slot.markdown(":shimmer[Stamping the paperwork…]")
+        except Exception:
+            # Progress is decorative; never let it take the run down.
+            logger.debug("Live progress update skipped", exc_info=True)
+
+    failure: str | None = None
+    result: SyndicateResult | None = None
+    with st.spinner("Convening the committee…", show_time=True):
+        try:
+            result = convene(
+                pitch,
+                api_key=api_key,
+                model=model_id,
+                brutality=brutality,
+                on_event=on_event,
+            )
+        except SyndicateError as exc:
+            failure = str(exc)
+
+    st.session_state.result = result
+    st.session_state.setup_error = failure
+    st.rerun()
+
+
+# ---------------------------------------------------------------------------
+# Page
+# ---------------------------------------------------------------------------
+
+hero()
+
+tracing_url = phoenix_url()
+
 with st.sidebar:
-    st.header("⚙️ Syndicate Controls")
-    api_key_input = st.text_input(
-        "Anthropic API Key",
-        value=os.getenv("ANTHROPIC_API_KEY", ""),
+    st.subheader("Syndicate controls", icon=":material/tune:")
+
+    api_key = st.text_input(
+        "Anthropic API key",
         type="password",
-        help="Configured from event voucher key."
-    )
-    
-    selected_model_label = st.selectbox(
-        "Active Frontier Model",
-        list(MODEL_MAP.keys()),
-        index=0,
-        help="Use Fable 5.1 during development to conserve credits; switch to Opus 5.5 for the live demo."
-    )
-    selected_model = MODEL_MAP[selected_model_label]
-
-    roast_mode = st.select_slider(
-        "🔥 Brutality Mode",
-        options=["Mild Reality Check", "Standard Sand Hill Roast", "Scorched Earth Term Sheet"],
-        value="Standard Sand Hill Roast"
+        value=os.getenv("ANTHROPIC_API_KEY", ""),
+        help="Read from ANTHROPIC_API_KEY / .env by default. Never logged.",
     )
 
-    st.markdown("---")
-    st.markdown("### 🔭 Arize Phoenix Observability")
-    if phoenix_url:
-        st.success("✅ Tracing Active (Local OSS)")
-        st.markdown(f"📊 [**Open Phoenix Tracing UI**]({phoenix_url})")
-        st.caption("Tracks OTEL spans, latency, token spend, and agent prompts locally at 0 credit cost.")
+    model_label = st.selectbox(
+        "Model",
+        MODEL_LABELS,
+        index=DEFAULT_MODEL_INDEX,
+        help="Use the fast model while iterating; switch up for the live demo.",
+    )
+    model_id = MODELS[model_label]
+
+    brutality = st.slider(
+        "Brutality index",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.85,
+        step=0.05,
+        help=(
+            "Interpolated into the partners' system prompts. This is prompt "
+            "text, not a sampling parameter."
+        ),
+    )
+
+    st.subheader("Observability", icon=":material/timeline:")
+    if tracing_url:
+        st.link_button(
+            "Open Phoenix traces",
+            tracing_url,
+            icon=":material/open_in_new:",
+            width="stretch",
+        )
+        st.caption("Local OTEL spans: latency, tokens, prompts. No external cost.")
     else:
         st.caption("Phoenix tracing offline.")
 
-    st.markdown("---")
-    st.markdown("### 🏛️ Committee Members")
-    st.markdown("""
-    • **🕶️ Marc Low-res** (General Partner)  
-    • **📊 Karen Burn-rate** (Quant CFO)  
-    • **💻 Torvalds-9000** (10x Grumpy CTO)  
-    • **🦈 Gordon Gekko AI** (Syndicate Shark)
-    """)
-    st.markdown("---")
-    st.caption("⚡ Built with Anthropic Claude for Stockholm Build Day at Epicenter.")
+    st.subheader("Committee", icon=":material/groups:")
+    for member in (*PARTNERS, SHARK):
+        st.markdown(f":material/{member.icon}: **{member.name}**")
+        st.caption(member.title)
 
-# Fast Startup Presets
-preset_options = {
-    "Select a pre-loaded startup idea or enter your own...": "",
-    "☕ Autonomous Oat Milk Micro-Roastery with Web3 Proof-of-Foam": 
-        "A decentralized network of countertop espresso machines that roast small-batch Nordic oat milk using on-chain temperature consensus. Users stake OAT tokens for latte art NFTs. Market size: $400B addressable beverage space.",
-    "🤖 AI Meeting Proxy that says 'Blocked by Backend' in 14 accents": 
-        "An autonomous AI agent avatar that joins daily Scrum standups on Zoom/Teams, randomly sighs, checks its phone, and responds 'I am blocked by the infrastructure backend' whenever your name is called. B2B SaaS priced at $49/engineer/month.",
-    "🐾 Uber for Cats: Feline Scooter On-Demand": 
-        "High-density urban cat affection. When an office worker feels burnt out, our app dispatches an autonomous electric scooter carrying a pre-vetted emotional support cat to their office lobby for a 15-minute petting session.",
-    "🍕 Tinder for Leftover Pizza: Peer-to-Peer Slice Swapping":
-        "A location-based peer-to-peer marketplace where college students swipe right on half-eaten pizza slices in nearby dorm rooms. Powered by zero-knowledge crust verification."
-}
+    st.caption("Built with Anthropic Claude for Stockholm Build Day at Epicenter.")
 
-col_preset, _ = st.columns([3, 1])
-with col_preset:
-    selected_preset = st.selectbox("💡 Choose a Fast Demo Pitch Example:", list(preset_options.keys()))
 
-default_pitch = preset_options[selected_preset] if selected_preset else ""
+st.subheader("Submit a pitch", icon=":material/rocket_launch:")
 
-# Input Form
-pitch_input = st.text_area(
-    "Submit your startup pitch or executive summary:",
-    value=default_pitch,
-    height=110,
-    placeholder="Describe your product, target customer, business model, and competitive advantage..."
+st.selectbox(
+    "Demo pitch",
+    list(PRESETS),
+    index=None,
+    placeholder="Load one of the built-in demo pitches",
+    key="preset_choice",
+    on_change=load_preset,
 )
 
-col_run, _ = st.columns([1, 4])
-with col_run:
-    roast_clicked = st.button("🚀 Convene Committee", type="primary", use_container_width=True)
+st.text_area(
+    "Pitch or executive summary",
+    key="pitch_text",
+    height=150,
+    placeholder=(
+        "Describe the product, the customer, the business model, and why "
+        "nobody else can build it."
+    ),
+)
 
-# State initialization
-if "verdict" not in st.session_state:
-    st.session_state["verdict"] = None
+with st.container(horizontal=True):
+    convene_clicked = st.button(
+        "Convene the committee",
+        type="primary",
+        icon=":material/gavel:",
+    )
+    st.button("Clear", icon=":material/backspace:", on_click=clear_all)
 
-if roast_clicked:
-    active_key = api_key_input.strip() or os.getenv("ANTHROPIC_API_KEY", "").strip()
-    
+
+# ---------------------------------------------------------------------------
+# Dispatch: idle / no key / empty pitch / running / result
+# ---------------------------------------------------------------------------
+
+active_key = (api_key or "").strip() or os.getenv("ANTHROPIC_API_KEY", "").strip()
+pitch_text = (st.session_state.pitch_text or "").strip()
+
+should_run = False
+if convene_clicked:
     if not active_key:
-        st.error("🔑 Please provide an Anthropic API Key in the sidebar or via .env")
-    elif not pitch_input.strip():
-        st.warning("⚠️ Please provide a startup pitch to evaluate!")
+        st.error(
+            "Add an Anthropic API key in the sidebar, or set ANTHROPIC_API_KEY.",
+            icon=":material/key_off:",
+        )
+    elif not pitch_text:
+        st.warning(
+            "The committee needs something to roast. Write a pitch or load a demo.",
+            icon=":material/edit_note:",
+        )
     else:
-        with st.spinner(f"⚡ Convening the 4 partners via {selected_model}..."):
-            try:
-                result = evaluate_pitch(
-                    pitch=pitch_input,
-                    api_key=active_key,
-                    model=selected_model,
-                    brutality_mode=roast_mode
-                )
-                st.session_state["verdict"] = result
-            except Exception as e:  # noqa: BLE001
-                st.error(f"Syndicate session error: {e!s}")
-                st.info("Ensure your Anthropic API Key is active and has credits available.")
+        should_run = True
 
-# Render Results from Session State (Persists across slider/control changes!)
-if st.session_state.get("verdict"):
-    data = st.session_state["verdict"]
-    
-    if data.get("refused"):
-        st.error("🛑 The Syndicate has declined to take this meeting.")
-        st.info(data.get("refusal_reason"))
-    else:
-        # Optional reasoning accordion for Opus
-        thinking_text = data.get("thinking_text", "")
-        if thinking_text:
-            with st.expander("🧠 VC Partner Deliberation (Claude Deep Extended Reasoning)", expanded=False):
-                st.markdown(f"```\n{thinking_text.strip()}\n```")
+if st.session_state.setup_error and not should_run:
+    st.error(st.session_state.setup_error, icon=":material/error:")
 
-        # Render Metrics Banner with animated styled cards
-        st.markdown("### 📊 Syndicate Quantitative Scorecard")
-        m1, m2, m3, m4 = st.columns(4)
-        with m1:
-            d_val = data.get('delusion_index', 94)
-            st.markdown(f"""
-            <div class="metric-gauge-card">
-                <div class="metric-label-sub">Delusion Index</div>
-                <div class="metric-value-huge" style="color: #EF4444;">{d_val}%</div>
-                <div style="font-size: 0.75rem; color: #F87171;">🚨 Critically High</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with m2:
-            m_val = data.get('moat_score', 1)
-            st.markdown(f"""
-            <div class="metric-gauge-card">
-                <div class="metric-label-sub">True Moat Score</div>
-                <div class="metric-value-huge" style="color: #F59E0B;">{m_val} / 10</div>
-                <div style="font-size: 0.75rem; color: #FCD34D;">⚡ Cloned in a weekend</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with m3:
-            r_val = data.get('runway_months', 2)
-            st.markdown(f"""
-            <div class="metric-gauge-card">
-                <div class="metric-label-sub">Survival Runway</div>
-                <div class="metric-value-huge" style="color: #38BDF8;">{r_val} Mo</div>
-                <div style="font-size: 0.75rem; color: #7DD3FC;">⏳ Immediate cash crunch</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with m4:
-            val_str = str(data.get('pre_money_val', "$12.00"))
-            st.markdown(f"""
-            <div class="metric-gauge-card">
-                <div class="metric-label-sub">Pre-Money Valuation</div>
-                <div style="font-size: 1.1rem; font-weight: 800; color: #A78BFA; min-height: 48px; display: flex; align-items: center; justify-content: center;">
-                    {val_str}
-                </div>
-                <div style="font-size: 0.75rem; color: #C4B5FD;">📉 Non-negotiable haircut</div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Render 3 Partner Cards with HTML-escaped text
-        st.markdown("### 🎙️ The Live Boardroom Debate")
-        c1, c2, c3 = st.columns(3)
-        
-        with c1:
-            st.markdown("""
-            <div class="agent-card">
-                <div class="agent-header">
-                    <span class="agent-badge badge-gp">General Partner</span>
-                    <span style="font-size: 0.7rem; color: #10B981;">● VOTED PASS</span>
-                </div>
-                <div class="agent-name">🕶️ Marc Low-res</div>
-                <div class="agent-title">Lead Deal Partner & TAM Critic</div>
-                <p style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.55;">""" + 
-                str(data.get('marc_critique_safe', '')) + 
-                """</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-        with c2:
-            st.markdown("""
-            <div class="agent-card">
-                <div class="agent-header">
-                    <span class="agent-badge badge-cfo">Chief Financial Officer</span>
-                    <span style="font-size: 0.7rem; color: #10B981;">● VOTED PASS</span>
-                </div>
-                <div class="agent-name">📊 Karen Burn-rate</div>
-                <div class="agent-title">Head of Unit Economics & Runway</div>
-                <p style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.55;">""" + 
-                str(data.get('karen_critique_safe', '')) + 
-                """</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with c3:
-            st.markdown("""
-            <div class="agent-card">
-                <div class="agent-header">
-                    <span class="agent-badge badge-cto">Chief Technology Officer</span>
-                    <span style="font-size: 0.7rem; color: #10B981;">● VOTED PASS</span>
-                </div>
-                <div class="agent-name">💻 Torvalds-9000</div>
-                <div class="agent-title">Systems & Tech Debt Assassin</div>
-                <p style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.55;">""" + 
-                str(data.get('torvalds_critique_safe', '')) + 
-                """</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Satirical Term Sheet Card
-        ts = data.get('satirical_term_sheet', {})
-        covenants = ts.get('covenants', [])
-        covenants_md = "\n".join([f"  [{i+1}] {c}" for i, c in enumerate(covenants)])
-        
-        term_sheet_text = f"""================================================================================
-            OFFICIAL SYNDICATE TERM SHEET (NON-BINDING)
-================================================================================
-TARGET COMPANY:      Founder Entity (Pre-Revenue / High-Anxiety)
-SYNDICATE VALUATION: {ts.get('valuation', '$42.00 and an oat milk cappuccino')}
-OFFERED INVESTMENT:  {ts.get('investment_amount', '$500 in AWS cloud credits')}
-LIQUIDATION PREF:    {ts.get('liquidation_pref', '10x participating senior preferred')}
-
-MANDATORY FOUNDER COVENANTS:
-{covenants_md}
-
-THE 1% REDEMPTION PIVOT (Actual path to revenue):
-👉 {data.get('the_pivot', 'Pivot to selling shovelware to other AI founders.')}
-================================================================================
-"""
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("### 📜 Syndicate Verdict & Non-Binding Term Sheet")
-        
-        st.markdown("""
-        <div class="stamp-badge">❌ REJECTED BY SYNDICATE</div>
-        """, unsafe_allow_html=True)
-        
-        st.code(term_sheet_text, language="yaml")
-
-        # Action bar: Download + Token telemetry
-        col_dl, col_usage = st.columns([1, 2])
-        with col_dl:
-            st.download_button(
-                label="📥 Download Satirical Term Sheet (.txt)",
-                data=term_sheet_text,
-                file_name="PitchRoast_Term_Sheet.txt",
-                mime="text/plain",
-                use_container_width=True
-            )
-        with col_usage:
-            usage = data.get("usage", {})
-            st.caption(f"⚡ **Session Telemetry**: {usage.get('input_tokens', 0)} in / {usage.get('output_tokens', 0)} out | Model: `{data.get('model', selected_model)}`")
+if should_run:
+    run_committee(pitch_text, active_key, model_id, brutality)
+elif st.session_state.result is not None:
+    draw_result(st.session_state.result)
+elif not convene_clicked:
+    st.caption(
+        "Load a demo pitch or write your own, then convene the committee. "
+        "Three partners deliberate in parallel before the shark closes."
+    )
