@@ -4,14 +4,13 @@ PitchRoast 🔥 - Full Syndicate Live Demo Runner
 Executes an end-to-end investment committee session using Anthropic's public API
 and records spans in Arize Phoenix OSS observability.
 """
-import json
 import os
-import re
 import sys
 import time
 
-import anthropic
 from dotenv import load_dotenv
+
+from syndicate import evaluate_pitch
 
 load_dotenv()
 
@@ -51,58 +50,20 @@ print(f"👉 \"{pitch}\"\n")
 model_choice = "claude-fable-5-1"
 print(f"⚡ Convening the 4-Partner Investment Syndicate via {model_choice}...")
 
-client = anthropic.Anthropic(
-    api_key=api_key,
-    base_url="https://api.anthropic.com"
-)
-
-system_orchestrator = """
-You are the PitchRoast Autonomous Investment Committee Syndicate consisting of 4 distinct AI partners:
-1. Marc Low-res (General Partner): Cynical Silicon Valley Tier-1 VC. Attacks the TAM, market delusions, buzzwords, and lack of real moat.
-2. Karen Burn-rate (Quantitative CFO): Ruthless Wall Street financial partner. Attacks unit economics, CAC vs LTV, negative margins, and runway delusions.
-3. Torvalds-9000 (10x Grumpy CTO): Veteran architect who hates AI wrappers, technical debt, and pointless microservices.
-4. Gordon Gekko AI (Syndicate Shark): Closing partner who delivers the ultimate verdict, metrics scores, and a satirical term sheet.
-
-Analyze the pitch and return a valid JSON object with the exact keys:
-{
-  "delusion_index": <int 0-100>,
-  "moat_score": <int 0-10>,
-  "runway_months": <int 1-12>,
-  "pre_money_val": "<string funny valuation, e.g. '$42.50 and a lukewarm latte'>",
-  "marc_critique": "<2-3 sentences sharp VC partner critique>",
-  "karen_critique": "<2-3 sentences sharp CFO financial takedown>",
-  "torvalds_critique": "<2-3 sentences sharp CTO technical dismantling>",
-  "satirical_term_sheet": {
-    "valuation": "<string>",
-    "investment_amount": "<string funny sum>",
-    "liquidation_pref": "<e.g. 5x participating with board veto>",
-    "covenants": [
-      "<absurd clause 1>",
-      "<absurd clause 2>",
-      "<absurd clause 3>"
-    ]
-  },
-  "the_pivot": "<One surprisingly perceptive pivot idea that could actually work>"
-}
-Ensure the tone is brilliant, hilarious, cynical, and Silicon Valley satire without violating safety policies. Return ONLY valid JSON.
-"""
-
 start_time = time.time()
 try:
-    response = client.messages.create(
+    data = evaluate_pitch(
+        pitch=pitch,
+        api_key=api_key,
         model=model_choice,
-        max_tokens=2048,
-        system=system_orchestrator,
-        messages=[{"role": "user", "content": f"Pitch to evaluate:\n\n{pitch}"}]
+        brutality_mode="Standard Sand Hill Roast"
     )
     elapsed = time.time() - start_time
-    
-    main_text = "".join(b.text for b in response.content if hasattr(b, "text"))
-    json_match = re.search(r'\{.*\}', main_text, re.DOTALL)
-    if json_match:
-        data = json.loads(json_match.group(0))
-    else:
-        data = json.loads(main_text)
+
+    if data.get("refused"):
+        print("\n🛑 The Syndicate declined to take this meeting.")
+        print(data.get("refusal_reason"))
+        sys.exit(0)
 
     print("\n" + "=" * 80)
     print("📊 SYNDICATE QUANTITATIVE SCORECARD")
@@ -131,13 +92,14 @@ try:
         print(f"   [{idx + 1}] {cov}")
     print(f"\n💡 THE 1% PIVOT (Actual path to revenue):\n👉 {data.get('the_pivot')}")
     
+    usage = data.get("usage", {})
     print("\n" + "=" * 80)
     print("⚡ SESSION TELEMETRY & OBSERVABILITY")
     print("=" * 80)
     print(f"• Latency:       {elapsed:.2f}s")
-    print(f"• Input Tokens:  {response.usage.input_tokens}")
-    print(f"• Output Tokens: {response.usage.output_tokens}")
-    print(f"• Total Tokens:  {response.usage.input_tokens + response.usage.output_tokens}")
+    print(f"• Input Tokens:  {usage.get('input_tokens')}")
+    print(f"• Output Tokens: {usage.get('output_tokens')}")
+    print(f"• Total Tokens:  {usage.get('total_tokens')}")
     print("• Arize Phoenix: Traces recorded at http://localhost:6006")
     print("=" * 80)
     print("✅ DEMO COMPLETED SUCCESSFULLY!\n")
