@@ -1,73 +1,110 @@
-# PitchRoast 🔥 — Multi-Agent Venture Syndicate
+# PitchRoast 🔥 — Technical & Design Specification
 
-> **Track**: Track 1 — Delight & Track 2 — Breakthrough  
-> **Pitch**: *"An autonomous venture syndicate of 4 ruthless AI partners who debate, dismantle, and deliver the brutal truth no VC says to your face—complete with live agent banter and a satirical term sheet."*
+> **Event**: Stockholm | Fable 5.1 x Opus 5.5 Build Day @ Epicenter  
+> **Tracks**: Track 1 — Delight & Track 2 — Breakthrough  
+> **Tagline**: *"The Autonomous Venture Committee of 4 ruthless AI partners who debate, dismantle, and deliver the brutal truth no VC says to your face—complete with live agent banter, animated scorecard, and a satirical term sheet."*
 
 ---
 
-## 🏛️ Multi-Agent Architecture
+## 1. 🏛️ Architecture & Autonomous Multi-Agent Topology
 
-Rather than a single prompt, **PitchRoast** deploys an autonomous investment committee:
+PitchRoast replaces polite diplomatic investor rejection emails with an autonomous, high-speed investment committee debate:
 
 ```mermaid
 graph TD
-    A[Founder Pitch Input] --> B[PitchRoast Multi-Agent Committee]
-    B --> C["🕶️ Marc Low-res<br><b>The Sand Hill Partner</b><br>Dismantles TAM & Market Delusions"]
-    B --> D["📊 Karen Burn-rate<br><b>The Ruthless Quant CFO</b><br>Attacks Unit Economics & CAC/LTV"]
-    B --> E["💻 Torvalds-9000<br><b>The Grumpy 10x CTO</b><br>Exposes AI Wrapper & Tech Debt"]
-    C --> F[Debate & Consensus Engine]
+    A[Founder Pitch Submission] --> B[PitchRoast Consensus Engine]
+    
+    subgraph Live Boardroom Deliberation
+        B --> C["🕶️ <b>Marc Low-res</b><br>General Partner<br><i>Tears down TAM & Market Delusions</i>"]
+        B --> D["📊 <b>Karen Burn-rate</b><br>Quant CFO<br><i>Attacks CAC/LTV & Unit Economics</i>"]
+        B --> E["💻 <b>Torvalds-9000</b><br>10x Systems CTO<br><i>Exposes AI Wrapper & Tech Debt</i>"]
+    end
+
+    C --> F[Syndicate Synthesis Layer]
     D --> F
     E --> F
-    F --> G["🦈 Gordon Gekko AI<br><b>The Syndicate Shark</b><br>Drafts Satirical Term Sheet & Final Score"]
-    G --> H[Live Interactive Dashboard & Exportable Contract]
+
+    F --> G["🦈 <b>Gordon Gekko AI</b><br>Managing Partner<br><i>Term Sheet, Absurd Covenants & Quantitative Scorecard</i>"]
+    
+    G --> H["📊 Animated Scorecard<br>• Delusion Index (%)<br>• True Moat (0-10)<br>• Runway (Months)<br>• Pre-Money Valuation"]
+    G --> I["📜 Stamped Satirical Term Sheet<br><i>With Non-Negotiable Covenants</i>"]
+    G --> J["💡 The 1% Pivot<br><i>Viable real-world path to revenue</i>"]
+    
+    subgraph OpenTelemetry Observability
+        B -.-> K["🔭 <b>Arize Phoenix OSS</b><br><i>Local OTEL Tracing Server (:6006)</i>"]
+        K -.-> L[Trace Spans & Latency]
+        K -.-> M[Token Accounting & Budget Guard]
+    end
 ```
 
-### The 4 Syndicate Agents
+### The Committee Partners
 
-1. **🕶️ The Sand Hill Partner ("Marc Low-res")**
-   - **Role**: General Partner / Ideology Critic.
-   - **Focus**: Market size delusions, "we have no competitors", buzzword soup, fake moats.
-   - **Tone**: Hyper-cynical, drops name of non-existent podcasts, references burning $20M in 2021.
-
-2. **📊 The Ruthless Quant CFO ("Karen Burn-rate")**
-   - **Role**: Head of Portfolio Financials.
-   - **Focus**: Negative gross margins, CAC > LTV, cloud bills, running out of money in 47 days.
-   - **Tone**: Ice cold, numbers-driven, allergic to "unmonetized user engagement".
-
-3. **💻 The Grumpy 10x CTO ("Torvalds-9000")**
-   - **Role**: Technical Partner & Code Architect.
-   - **Focus**: "You're literally an OpenAI API call wrapped in Tailwind", technical debt, latency, hallucination risks.
-   - **Tone**: Exhausted senior engineer who has rewritten your stack in Rust during the meeting.
-
-4. **🦈 The Syndicate Shark ("Gordon Gekko AI")**
-   - **Role**: Managing Partner & Lead Negotiator.
-   - **Focus**: Valuation haircut (95%), 5x participating preferred liquidation, founder dilution, absurd covenants.
-   - **Tone**: Ruthless dealmaker who presents the contract you must sign.
+| Partner | Persona Title | Focus Domain | Architectural Role |
+| :--- | :--- | :--- | :--- |
+| **🕶️ Marc Low-res** | General Partner | TAM delusions, buzzword soup, market reality | Attacks founder pitch assumptions and fake moats |
+| **📊 Karen Burn-rate** | Quant CFO | Unit economics, CAC > LTV, negative margins | Computes financial burn and cash crunch runway |
+| **💻 Torvalds-9000** | 10x Systems CTO | AI wrappers, single-point failures, latency | Technical architecture dissection and tech debt |
+| **🦈 Gordon Gekko AI** | Syndicate Shark | Term sheet, valuation haircut, covenants | Delivers the binding contract and final quantitative verdict |
 
 ---
 
-## 📊 Live Metrics & Scoring System
+## 2. 🎨 UI/UX & Animation Specification
 
-The syndicate computes 4 quantitative indices:
-1. **Delusion Index** (0 - 100%): How divorced from reality is the pitch?
-2. **True Moat Score** (0 - 10/10): How easily could a college student copy this this weekend?
-3. **Runway Probability** (0 - 100%): Odds of surviving 12 months without emergency down-round.
-4. **Venture Capitalist BS Resistance** (0 - 10/10): Ability to withstand basic due diligence.
+### Design Principles
+* **Dark Glassmorphism**: Translucent card layers (`rgba(30, 41, 59, 0.7)` with `backdrop-filter: blur(12px)`) over deep space background.
+* **Warm Fire Gradient Accent**: Signature gradient (`#FF4500` Flame to `#FF8C00` Amber to `#FFD700` Gold).
+* **Kinetic Micro-Interactions**:
+  - `pulseGlow`: Hero banner emits a soft pulsing orange glow simulating an active boardroom furnace.
+  - `flameFlicker`: The fire icon rotates and scales dynamically.
+  - `ledBlink`: Real-time status indicators blink green (`#10B981`) to signify active model consensus.
+  - `slideUpFade`: Deliberation cards smoothly transition into view when generated.
+  - `hoverElevation`: Partner cards elevate (`translateY(-4px)`) on hover with warm glow borders.
+* **Stamped Syndicate Verdict**: Term sheets feature a tilted, distressed red stamp badge (`❌ REJECTED BY SYNDICATE`) with red neon border glow.
 
 ---
 
-## 🚀 2-Minute Presentation Flow (20:30 at Epicenter)
+## 3. 🤖 Frontier Model Strategy & Credit Budgeting
 
-* **0:00 - 0:25 (The Problem)**: Every founder gets ghosted or fed diplomatic platitudes ("Let's stay in touch!"). PitchRoast gives you the unvarnished truth before you burn two years and your savings.
-* **0:25 - 1:25 (Live Multi-Agent Demo)**:
-  - Submit a startup idea on screen.
-  - Watch the 3 partners debate live in parallel streams:
-    - Marc attacks the market assumption.
-    - Karen shreds the unit economics.
-    - Torvalds calls out the API wrapper.
-  - Shark enters to summarize the verdict and present the satirical term sheet.
-* **1:25 - 1:45 (Tech Innovation)**:
-  - Multi-agent persona prompting powered by Claude 3.5 Sonnet / Opus 5.5 / Fable 5.1.
-  - Parallel orchestration with streaming UI cards.
-  - Instant downloadable markdown/contract.
-* **1:45 - 2:00 (The Closing Punchline)**: *"PitchRoast: The honest VC that costs \$0 instead of 20% of your company."*
+The system targets Anthropic's event-provisioned models with automated cost management:
+
+* **⚡ `claude-fable-5-1` (Default / Development Mode)**:
+  - Direct token output without extended reasoning overhead.
+  - Latency: ~2.5–4.5s.
+  - Ideal for rapid prompt tweaking, preset tests, and conserving the 100€ credits.
+* **🧠 `claude-opus-5-5` (Stage Demo Mode)**:
+  - Activates extended thinking blocks (`ThinkingBlock`).
+  - Automatically isolates thinking tokens into an expandable deliberation drawer (`🧠 VC Partner Deliberation`).
+  - Maximum wit, deep financial dissection, and satirical punch.
+* **Telemetry Accounting**:
+  - Real-time display of input tokens, output tokens, and model identifier after each execution.
+
+---
+
+## 4. 🔭 Observability Specification (Arize Phoenix OSS)
+
+* **Architecture**: OpenInference auto-instrumentation wrapped around Anthropic client SDK (`openinference-instrumentation-anthropic`).
+* **Zero Credit Overhead**: Runs as an in-process daemon on `http://localhost:6006` on the local machine.
+* **Observed Metrics**:
+  - Latency per message generation.
+  - Exact token usage breakdown (prompt tokens, completion tokens).
+  - OpenTelemetry span hierarchy.
+  - Prompt payloads and JSON response fidelity.
+
+---
+
+## 5. 🎤 2-Minute Stage Pitch Playbook (20:30 at Epicenter)
+
+* **0:00 - 0:25 (The Problem Hook)**:
+  > *"Every founder in this room has pitched an investor and received the standard diplomatic reply: 'Great deck, let's keep in touch!' That's VC code for: 'This makes zero sense.' We built PitchRoast to eliminate polite lies."*
+* **0:25 - 1:15 (The Live Demo)**:
+  > Select preset: *'Autonomous Oat Milk Micro-Roastery with Web3 Proof-of-Foam'*.  
+  > Click **🚀 Convene Committee**.  
+  > Watch the animated scorecards light up (Delusion Index: 94%, Valuation: $11.80 and a lukewarm latte).  
+  > Read Marc's roast: *"Your TAM includes tap water, Capri Sun, and every drink at Little League."*  
+  > Read Torvalds' roast: *"You cannot roast milk. That is a thermodynamic fact."*  
+  > Point out the stamped Term Sheet and absurd covenants.
+* **1:15 - 1:40 (The Tech & Observability)**:
+  > Show the multi-agent consensus architecture powered by Claude Fable 5.1 and Opus 5.5.  
+  > Switch tabs to `localhost:6006` to flash the live Arize Phoenix OpenTelemetry tracing dashboard.
+* **1:40 - 2:00 (Closing Punchline)**:
+  > *"PitchRoast: The honest VC that costs \$0 instead of 20% of your equity. Thank you!"*
