@@ -29,30 +29,30 @@ graph TD
     A[Founder Pitch Submission] --> B[PitchRoast Multi-Agent Committee]
     
     subgraph Boardroom Debate
-        B --> C["🕶️ <b>Trip Hockeystick</b><br>General Partner<br><i>Tears down TAM & Market Delusions</i>"]
-        B --> D["📉 <b>Dagny Downround</b><br>Quant CFO<br><i>Attacks CAC/LTV & Unit Economics</i>"]
-        B --> E["💻 <b>Kernel Panik</b><br>10x Chief Tech Officer<br><i>Exposes AI Wrapper & Tech Debt</i>"]
+        B --> C["🕶️ <b>Max Market</b><br>The Idea Judge<br><i>Tears down fake demand & big dreams</i>"]
+        B --> D["💰 <b>Penny Pinch</b><br>The Money Boss<br><i>Attacks piggy bank burn & bad unit math</i>"]
+        B --> E["💻 <b>Tech Toby</b><br>The Tech Builder<br><i>Exposes duct-tape code & fake AI</i>"]
     end
 
     C --> F[Syndicate Consensus Engine]
     D --> F
     E --> F
 
-    F --> G["🦈 <b>Björn Liquidation</b><br>Managing Partner<br><i>Drafts Satirical Term Sheet & Final Score</i>"]
+    F --> G["🦈 <b>Boss Shark</b><br>The Big Boss<br><i>Drafts Funny Term Sheet & Final Score</i>"]
     
-    G --> H["📊 Quantitative Scorecard<br>• Delusion Index (%)<br>• Real Moat (0-10)<br>• Runway (Months)<br>• Pre-Money Valuation"]
+    G --> H["📊 Quantitative Scorecard<br>• Make-Believe Index (%)<br>• Real Tech Score (0-10)<br>• Runway (Months)<br>• Pre-Money Valuation"]
     G --> I["📜 Satirical Term Sheet<br><i>With Absurd Mandatory Covenants</i>"]
     G --> J["💡 The 1% Pivot<br><i>Actionable path to real revenue</i>"]
 ```
 
-### The Committee Partners
+### The Committee Judges
 
 | Agent | Persona & Title | Focus Area |
 | :--- | :--- | :--- |
-| **🕶️ Trip Hockeystick** | General Partner | Dismantles market size assumptions, calls out buzzword soup, and mocks lack of a genuine moat. |
-| **📉 Dagny Downround** | Quant Chief Financial Officer | Destroys negative gross margins, CAC > LTV, cloud burn, and the inevitable down-round. |
-| **💻 Kernel Panik** | 10x Systems CTO | Flags "OpenAI API wrapper" architecture, tech debt, and single-point-of-failure vulnerabilities. |
-| **🦈 Björn Liquidation** | Syndicate Shark | Delivers the committee's final quantitative scores, valuation haircut, and non-negotiable clauses. |
+| **🕶️ Max Market** | The Idea Judge | Calls out make-believe customer numbers, buzzwords, and ideas nobody actually asked for. |
+| **💰 Penny Pinch** | The Money Boss | Destroys ideas that spend $100 to make $1, charging pennies for things that cost dollars to run. |
+| **💻 Tech Toby** | The Tech Builder | Exposes gadgets held together with duct tape and simple websites pretending to be super-smart AI. |
+| **🦈 Boss Shark** | The Big Boss | Combines all votes, makes the final call (Deal or No Deal), and issues funny contract rules. |
 
 ---
 
@@ -133,17 +133,27 @@ set `PITCHROAST_PRICING` once you have confirmed the real number in the Console.
 
 ## 🎤 2-Minute Demo Presentation Script
 
-Designed specifically for the 20:30 presentation at Epicenter:
+Designed for anyone (even a 10-year-old!) to deliver with confidence, laughter, and zero jargon:
 
 1. **The Hook (0:00 - 0:25)**:
-   > *"Every founder in this room has pitched an investor and heard: 'Great deck, let's keep in touch!' That’s VC code for: 'This makes zero sense.' We built PitchRoast to eliminate polite lies."*
-2. **The Live Demo (0:25 - 1:25)**:
-   > *Select one of the built-in presets (e.g., 'Autonomous Oat Milk Micro-Roastery with Web3 Proof-of-Foam').*  
-   > *Click 'Convene Committee'. Watch the seated partners debate and read aloud Trip's market roast, Dagny's financial reality check, and the satirical term sheet clauses.*
-3. **The Tech (1:25 - 1:45)**:
-   > *Explain the multi-agent committee architecture, structured JSON consensus schema, and instant real-time generation powered by Anthropic's frontier Claude models.*
-4. **The Closing Punchline (1:45 - 2:00)**:
-   > *"PitchRoast: The honest venture capital firm that costs \$0 instead of 20% of your equity. Thank you!"*
+   > *"Have you ever told a friend about a cool idea, and they said: 'Oh wow, that’s so great! You should totally do that!' ... But deep down, you knew it was actually a terrible idea, and they were just being nice?  
+   > Founders waste months of time and burn all their savings because people are too polite to tell them the truth. We built PitchRoast to tell you the funny, honest truth in 15 seconds!"*
+
+2. **Meet The Judges (0:25 - 0:45)**:
+   > *"We have four AI judges testing your pitch:  
+   > • Max Market asks: 'Will anyone actually wake up and pay money for this?'  
+   > • Penny Pinch counts your pennies: 'You're spending your whole allowance to make zero dollars!'  
+   > • Tech Toby looks under the hood: 'You didn't build smart AI, you just taped an iPad to a broom!'  
+   > • And Boss Shark gives the final verdict: Deal or No Deal!"*
+
+3. **The Live Demo (0:45 - 1:25)**:
+   > *(Click on 'Klarna for Regret' or 'FikaSync Bun Police' and press Convene Committee)*  
+   > *"Look at that! In 14 seconds, all three judges talk at the exact same time.  
+   > Boss Shark says: '96% Make-Believe! Valuation: 25 Kronor and a half-eaten cinnamon bun!'"*
+
+4. **The Big Finish (1:25 - 1:45)**:
+   > *"Behind the scenes, we use Anthropic Claude and live local telemetry, tracking our 100 Euro hackathon voucher in real-time.  
+   > PitchRoast: The honest VC that tells you the truth in 15 seconds, and costs $0 instead of giving away your company. Thank you!"*
 
 ---
 
