@@ -68,7 +68,14 @@ PRESETS: dict[str, str] = {
 def _load_preset() -> None:
     """Copy the chosen demo pitch into the text area."""
     label = st.session_state.get("preset_choice")
-    if label:
+    if label and label in PRESETS:
+        st.session_state.pitch_text = PRESETS[label]
+
+
+def _select_preset(label: str) -> None:
+    """Callback for preset buttons on the main stage to safely set state before widgets instantiate."""
+    st.session_state.preset_choice = label
+    if label in PRESETS:
         st.session_state.pitch_text = PRESETS[label]
 
 
@@ -146,22 +153,42 @@ def render() -> None:
     st.caption("⚡ Try a quick preset or type your custom startup pitch below:")
 
     pcols = st.columns(4)
-    if pcols[0].button("☕ FikaSync", key="main_fika", use_container_width=True, disabled=st.session_state.running, help="Load Swedish FikaSync Compliance pitch"):
-        st.session_state.pitch_text = PRESETS["☕ FikaSync Compliance"]
-        st.session_state.preset_choice = "☕ FikaSync Compliance"
-        st.rerun()
-    if pcols[1].button("💳 Klarna for Regret", key="main_klarna", use_container_width=True, disabled=st.session_state.running, help="Load Klarna for Regret pitch"):
-        st.session_state.pitch_text = PRESETS["💳 Klarna for Regret"]
-        st.session_state.preset_choice = "💳 Klarna for Regret"
-        st.rerun()
-    if pcols[2].button("🤖 Standup Bot", key="main_standup", use_container_width=True, disabled=st.session_state.running, help="Load AI Standup Bot pitch"):
-        st.session_state.pitch_text = PRESETS["🤖 AI Standup Bot"]
-        st.session_state.preset_choice = "🤖 AI Standup Bot"
-        st.rerun()
-    if pcols[3].button("☕ Oat Milk Web3", key="main_oat", use_container_width=True, disabled=st.session_state.running, help="Load Oat Milk Web3 pitch"):
-        st.session_state.pitch_text = PRESETS["☕ Oat Milk Web3"]
-        st.session_state.preset_choice = "☕ Oat Milk Web3"
-        st.rerun()
+    pcols[0].button(
+        "☕ FikaSync",
+        key="main_fika",
+        use_container_width=True,
+        disabled=st.session_state.running,
+        help="Load Swedish FikaSync Compliance pitch",
+        on_click=_select_preset,
+        args=("☕ FikaSync Compliance",),
+    )
+    pcols[1].button(
+        "💳 Klarna for Regret",
+        key="main_klarna",
+        use_container_width=True,
+        disabled=st.session_state.running,
+        help="Load Klarna for Regret pitch",
+        on_click=_select_preset,
+        args=("💳 Klarna for Regret",),
+    )
+    pcols[2].button(
+        "🤖 Standup Bot",
+        key="main_standup",
+        use_container_width=True,
+        disabled=st.session_state.running,
+        help="Load AI Standup Bot pitch",
+        on_click=_select_preset,
+        args=("🤖 AI Standup Bot",),
+    )
+    pcols[3].button(
+        "☕ Oat Milk Web3",
+        key="main_oat",
+        use_container_width=True,
+        disabled=st.session_state.running,
+        help="Load Oat Milk Web3 pitch",
+        on_click=_select_preset,
+        args=("☕ Oat Milk Web3",),
+    )
 
     with st.expander("📑 Download Sample Pitch Decks (Executive 1-Pager PDFs)", expanded=False, icon=":material/picture_as_pdf:"):
         st.caption("Need a reference pitch deck? Download ready-to-present sample one-pager PDFs for the committee:")

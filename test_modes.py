@@ -289,6 +289,18 @@ def test_founder_flow() -> None:
     check("empty pitch is refused", bool(at.warning), "no warning shown")
     check("nothing was billed", at.session_state["spend"] == [])
 
+    # Main stage preset buttons must work cleanly without StreamlitWidgetAlreadyInstantiatedError
+    at.button(key="main_klarna").click().run()
+    check(
+        "clicking main_klarna loads Klarna preset without error",
+        not at.exception and "Stockholm-born fintech" in at.text_area(key="pitch_text").value,
+    )
+    at.button(key="main_fika").click().run()
+    check(
+        "clicking main_fika loads FikaSync preset without error",
+        not at.exception and "FikaSync" in at.text_area(key="pitch_text").value,
+    )
+
 
 def test_state_guards() -> None:
     """Widget options are a browser-side convenience, not a wire guarantee.
