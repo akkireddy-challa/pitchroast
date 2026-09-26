@@ -493,6 +493,12 @@ def render() -> None:
 
     header_col, lock_col = st.columns([4, 1], vertical_alignment="center")
     with header_col:
+        st.html(
+            '<div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 999px; padding: 4px 12px; font-size: 0.76rem; font-weight: 800; color: #38BDF8; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px;">'
+            '<span style="width: 7px; height: 7px; border-radius: 50%; background: #38BDF8; box-shadow: 0 0 8px #38BDF8;"></span>'
+            'MISSION CONTROL TELEMETRY · ARIZE PHOENIX OSS · STOCKHOLM BUILD DAY'
+            '</div>'
+        )
         st.title("Syndicate observatory", anchor=False)
     with lock_col:
         if st.button("🔒 Lock Admin", key="lock_admin_btn", help="Lock the Observatory and return to Hot Seat"):

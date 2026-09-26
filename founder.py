@@ -143,6 +143,7 @@ def render() -> None:
     )
 
     st.subheader("Your pitch", icon=":material/rocket_launch:")
+    st.caption("⚡ Try a quick preset or type your custom startup pitch below:")
 
     pcols = st.columns(4)
     if pcols[0].button("☕ FikaSync", key="main_fika", use_container_width=True, disabled=st.session_state.running, help="Load Swedish FikaSync Compliance pitch"):
@@ -214,6 +215,7 @@ def render() -> None:
         ),
         disabled=st.session_state.running,
     )
+    st.caption("💡 Pro-tip: Clearly state the problem, your business model, and why incumbents cannot easily copy you.")
 
     with st.container(horizontal=True):
         # `disabled` while a run is in flight: a second click mid-run raises

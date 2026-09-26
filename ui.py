@@ -341,6 +341,172 @@ def inject_flair(partners: tuple[Any, ...] | None = None) -> None:
     opacity: 0.55;
 }}
 
+/* --- Modern 2026 UI Design System ----------------------------------- */
+.stApp {{
+    background: radial-gradient(circle at 10% 10%, rgba(255, 69, 0, 0.05) 0%, transparent 45%),
+                radial-gradient(circle at 90% 90%, rgba(56, 189, 248, 0.04) 0%, transparent 45%),
+                #0B1120 !important;
+}}
+
+button[kind="primary"] {{
+    background: linear-gradient(135deg, #FF4500 0%, #EA580C 50%, #C2410C 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 4px 18px rgba(255, 69, 0, 0.35) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em !important;
+    border-radius: 10px !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}}
+button[kind="primary"]:hover {{
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow: 0 6px 25px rgba(255, 69, 0, 0.55) !important;
+    border-color: rgba(255, 255, 255, 0.45) !important;
+}}
+button[kind="primary"]:active {{
+    transform: translateY(0px) scale(0.99) !important;
+}}
+
+button[kind="secondary"] {{
+    background: rgba(30, 41, 59, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    backdrop-filter: blur(8px) !important;
+    border-radius: 10px !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}}
+button[kind="secondary"]:hover {{
+    background: rgba(255, 69, 0, 0.12) !important;
+    border-color: rgba(255, 140, 0, 0.50) !important;
+    color: #F8FAFC !important;
+    transform: translateY(-2px) !important;
+}}
+
+.stDownloadButton > button {{
+    background: rgba(30, 41, 59, 0.65) !important;
+    border: 1px solid rgba(255, 140, 0, 0.35) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}}
+.stDownloadButton > button:hover {{
+    background: rgba(255, 140, 0, 0.18) !important;
+    border-color: rgba(255, 140, 0, 0.80) !important;
+    box-shadow: 0 4px 16px rgba(255, 140, 0, 0.25) !important;
+    transform: translateY(-2px) !important;
+}}
+
+.stTextArea textarea {{
+    background: rgba(15, 23, 42, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(12px) !important;
+    color: #F8FAFC !important;
+    font-family: inherit !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}}
+.stTextArea textarea:focus {{
+    border-color: #FF8C00 !important;
+    box-shadow: 0 0 16px rgba(255, 140, 0, 0.25) !important;
+}}
+
+div[data-testid="stMetric"] {{
+    background: rgba(22, 30, 49, 0.65) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    padding: 12px 16px !important;
+    backdrop-filter: blur(10px) !important;
+    transition: all 0.2s ease !important;
+}}
+div[data-testid="stMetric"]:hover {{
+    border-color: rgba(255, 140, 0, 0.40) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.6) !important;
+}}
+
+div[data-testid="stVerticalBlockBorderWrapper"] > div {{
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 14px !important;
+    backdrop-filter: blur(8px) !important;
+}}
+
+[data-testid="stSidebar"] {{
+    background: #080D18 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}}
+[data-testid="stSidebar"] div[data-testid="stVerticalBlockBorderWrapper"] > div {{
+    background: rgba(22, 30, 49, 0.50) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    transition: border-color 0.2s ease, transform 0.2s ease !important;
+}}
+[data-testid="stSidebar"] div[data-testid="stVerticalBlockBorderWrapper"] > div:hover {{
+    border-color: rgba(255, 140, 0, 0.35) !important;
+    transform: translateY(-1px) !important;
+}}
+
+div[data-testid="stExpander"] {{
+    background: rgba(22, 30, 49, 0.40) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+}}
+
+div[data-testid="stSegmentedControl"] {{
+    background: rgba(15, 23, 42, 0.70) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 999px !important;
+    padding: 3px !important;
+    backdrop-filter: blur(12px) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}}
+div[data-testid="stSegmentedControl"] button {{
+    border-radius: 999px !important;
+    border: none !important;
+    font-weight: 700 !important;
+    font-size: 0.82rem !important;
+    padding: 6px 14px !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}}
+div[data-testid="stSegmentedControl"] button[aria-checked="true"] {{
+    background: linear-gradient(135deg, rgba(255, 69, 0, 0.35) 0%, rgba(255, 140, 0, 0.45) 100%) !important;
+    color: #FFF !important;
+    border: 1px solid rgba(255, 140, 0, 0.60) !important;
+    box-shadow: 0 0 12px rgba(255, 69, 0, 0.35) !important;
+}}
+
+div[data-testid="stAlert"] {{
+    border-radius: 12px !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}}
+
+div[data-testid="stSlider"] [role="slider"] {{
+    background-color: #FF8C00 !important;
+    border: 2px solid #FFF !important;
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.6) !important;
+}}
+
+/* Code Terminal Styling */
+.stCode {{
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: #080D18 !important;
+}}
+
+/* Dataframe styling */
+[data-testid="stDataFrame"] {{
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    overflow: hidden !important;
+}}
+
+/* Progress bar neon styling */
+div[data-testid="stProgressBar"] > div > div > div > div {{
+    background: linear-gradient(90deg, #FF4500, #FF8C00, #10B981) !important;
+    box-shadow: 0 0 12px rgba(255, 140, 0, 0.4) !important;
+    border-radius: 999px !important;
+}}
+
+
+
 /* --- Accessibility ------------------------------------------------------ */
 /* Motion here is decoration. Anyone who asks for less gets the static layout. */
 @media (prefers-reduced-motion: reduce) {{
