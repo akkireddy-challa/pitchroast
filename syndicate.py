@@ -212,6 +212,7 @@ class SyndicateResult:
     input_tokens: int = 0
     output_tokens: int = 0
     session_id: str = ""  # Phoenix session.id — ties every span of this run together
+    is_mock: bool = False  # True when running in Zero-Crash Resilience Fallback mode
 
     @property
     def total_tokens(self) -> int:
@@ -766,6 +767,198 @@ def setup_observability() -> str | None:
         return None
 
 
+# --------------------------------------------------------------------------
+# Zero-Crash Demo Simulation Engine (Hackathon Resilience)
+# --------------------------------------------------------------------------
+
+
+def fallback_verdict(
+    pitch: str,
+    panel: Sequence[str] | None = None,
+    model: str = DEFAULT_MODEL,
+    brutality: float = 0.85,
+    on_event: Callable[[Event], None] | None = None,
+    session_id: str | None = None,
+) -> SyndicateResult:
+    """Generate an ultra-realistic, hilarious satirical committee roast for demo resilience."""
+    seats = resolve_panel(panel)
+    pitch_clean = (pitch or "").strip()
+    p_lower = pitch_clean.lower()
+
+    if "fika" in p_lower or "kanelbulle" in p_lower:
+        critiques = {
+            "marc": ("You took Sweden's sacred constitutional right to pause work and eat a kanelbulle and turned it into an authoritarian police state. No engineering team on earth is installing an agent that revokes AWS access because someone coded during cinnamon bun hour. Your TAM is strictly companies that want their entire dev team to quit on Friday.", 91, 1, 2, "An authoritarian state disguised as coffee culture."),
+            "karen": ("You're proposing a B2B compliance tool whose sole measurable outcome is halting production deployments twice a day. The ROI calculation is negative infinity because you're charging $49/seat to reduce engineering velocity by 100%. The Swedish unions will applaud you right up until their servers crash and nobody is legally allowed to touch the keyboard.", 88, 2, 3, "Charging companies to legally sabotage their own sprint velocity."),
+            "torvalds": ("This isn't an autonomous AI compliance agent; it's a cron job that triggers a bash script calling AWS IAM revocation wrapped in an Electron app. If a developer sets their system clock 20 minutes forward, your entire 'patent-pending AI posture' dissolves into lukewarm coffee.", 95, 0, 1, "A bash script with an espresso machine API."),
+        }
+        shark_data = {
+            "delusion": 92, "moat": 1, "runway": 2,
+            "pre_money": "42 SEK and a lukewarm 7-Eleven kanelbulle",
+            "sheet": TermSheet(
+                valuation="42 SEK",
+                investment_amount="One copper coin found behind the espresso machine",
+                liquidation_pref="3x participating, backed by stale baked goods",
+                covenants=[
+                    "Founder must personally deliver fresh buns to Sand Hill Road daily",
+                    "AWS root credentials forfeited to committee immediately",
+                    "Mandatory 4-hour fika breaks for all executives",
+                ],
+            ),
+            "pivot": "Pivot from developer punishment to an automated bakery supply logistics API that predicts bun shortages in Stockholm office towers.",
+            "funded": False,
+            "closing": "Deal? Not in this lifetime. Go drink a real coffee and rethink your life choices.",
+        }
+    elif "klarna" in p_lower or "regret" in p_lower or "remorse" in p_lower:
+        critiques = {
+            "marc": ("Buy Now Pay Later for emotional shame is basically every credit card company already, except you don't even get airline miles. Amortizing regret doesn't make people feel better; it just means when their 4th installment hits next month, they get to relive texting their ex in high definition.", 94, 2, 2, "Monetizing 3 AM emotional catastrophes in 4 easy payments."),
+            "karen": ("Default rates on remorse are 100%. Nobody pays off a debt when the underlying asset is an embarrassing memory. Your debt collection strategy will literally be emailing people asking 'Remember that terrible decision? Pay us $25.' Good luck factoring those receivables.", 91, 1, 1, "A business model built on unpaid existential dread."),
+            "torvalds": ("Open Banking APIs don't have an endpoint for GET /v1/user/cringe_level. You're basically building a payment gateway on Stripe with sad emoji push notifications and calling it proprietary AI.", 89, 0, 2, "A Stripe integration with clinical depression."),
+        }
+        shark_data = {
+            "delusion": 93, "moat": 1, "runway": 2,
+            "pre_money": "Zero SEK, split over 4 fortnightly installments of disappointment",
+            "sheet": TermSheet(
+                valuation="Zero SEK",
+                investment_amount="A box of tissues and a prepaid gym membership",
+                liquidation_pref="5x participating on all future bad decisions",
+                covenants=[
+                    "Founder must delete Instagram and LinkedIn after 10 PM",
+                    "All late fees payable in Spotify shares",
+                    "Committee receives 20% royalty on all future apologies",
+                ],
+            ),
+            "pivot": "Partner with nightclubs to block Apple Pay after 1:00 AM.",
+            "funded": False,
+            "closing": "I regret listening to this pitch. No deal.",
+        }
+    elif "standup" in p_lower or "scrum" in p_lower or "blocked by" in p_lower:
+        critiques = {
+            "marc": ("Engineering managers already know their team is blocked by Docker; they don't need to pay $49 a month for an avatar to sigh dramatically on Zoom. The only thing you're disrupting is the mute button.", 89, 2, 3, "Automating the collective apathy of agile software development."),
+            "karen": ("$49 per engineer per month to replace a 2-minute meeting that everyone already ignores? The unit economics assume companies love paying enterprise software licenses to automate slacking off.", 86, 1, 3, "Charging enterprise SaaS rates for glorified absenteeism."),
+            "torvalds": ("A headless browser running Puppeteer connected to a soundboard of pre-recorded sighs is not an autonomous multi-agent swarm. One Zoom update and your whole company is a 404 error.", 94, 0, 1, "Puppeteer script with a bad attitude."),
+        }
+        shark_data = {
+            "delusion": 91, "moat": 1, "runway": 2,
+            "pre_money": "$12.00 and an expired Jira sprint",
+            "sheet": TermSheet(
+                valuation="$12.00",
+                investment_amount="$100 in AWS compute",
+                liquidation_pref="10x participating",
+                covenants=[
+                    "Founder must attend 8 hours of live standups every day",
+                    "Avatar must declare 'I love the board' every 15 minutes",
+                    "Jira licenses restricted to read-only forever",
+                ],
+            ),
+            "pivot": "Build an AI that actually fixes the Docker configuration instead of apologizing for it.",
+            "funded": False,
+            "closing": "Your pitch is blocked by common sense. Pass.",
+        }
+    elif "oat" in p_lower or "web3" in p_lower or "crypto" in p_lower:
+        critiques = {
+            "marc": ("Nobody in Stockholm is waiting for 14 blockchain validators to reach proof-of-stake consensus before their oat milk latte is allowed to dispense. The TAM for decentralized oat milk is zero.", 96, 0, 1, "Web3 grift poured into a cardboard coffee cup."),
+            "karen": ("Gas fees on Ethereum currently cost more than a flat white at Drop Coffee. You are burning $18 in compute to heat 200ml of oats.", 93, 1, 2, "Unit margins so negative they violate thermodynamic laws."),
+            "torvalds": ("Smart contracts cannot detect whether milk is burnt. You built a microcontroller with an expensive JSON-RPC connection and called it a revolution.", 97, 0, 1, "An overpriced toaster with a blockchain address."),
+        }
+        shark_data = {
+            "delusion": 95, "moat": 0, "runway": 1,
+            "pre_money": "0.000004 OAT tokens (approximately 3 kronor)",
+            "sheet": TermSheet(
+                valuation="0.000004 OAT",
+                investment_amount="Two bags of steel-cut oats",
+                liquidation_pref="100x non-participating",
+                covenants=[
+                    "Founder must unplug all miners immediately",
+                    "All smart contracts burned on live stream",
+                    "Only cow milk allowed in board meetings",
+                ],
+            ),
+            "pivot": "Unplug the blockchain and sell ordinary coffee beans to normal humans.",
+            "funded": False,
+            "closing": "Consensus reached: Absolutely not. Pass.",
+        }
+    else:
+        sample = pitch_clean[:36] + ("…" if len(pitch_clean) > 36 else "")
+        critiques = {
+            "marc": (f"You are describing a classic solution looking for an imaginary problem. The market for '{sample}' is practically nonexistent outside of your immediate social circle. The moment you ask customers to pull out a credit card, churn will hit vertical freefall.", 88, 2, 3, "A solution desperately hunting for a problem to solve."),
+            "karen": ("Your unit economics assume infinite customer lifetime value with zero acquisition friction, which is mathematically impossible outside of children's fairy tales. You are burning capital to subsidize transactions with negative gross margins.", 86, 1, 2, "Losing money on every unit and praying for volume."),
+            "torvalds": ("Underneath the buzzwords claiming 'autonomous frontier AI', this is literally three prompt templates and an API call glued together with duct tape. An intern with a laptop and Cursor could clone your entire repository before lunchtime.", 93, 0, 1, "A weekend hackathon script with a Series A valuation."),
+        }
+        shark_data = {
+            "delusion": 90, "moat": 1, "runway": 2,
+            "pre_money": "50 SEK and an open-source GitHub star",
+            "sheet": TermSheet(
+                valuation="50 SEK",
+                investment_amount="A complimentary lunch voucher",
+                liquidation_pref="4x participating with senior preference",
+                covenants=[
+                    "Delete all references to 'revolutionary AI' from the pitch deck",
+                    "Founder must interview 50 paying customers before touching code",
+                    "Mandatory weekly burn rate audit by committee",
+                ],
+            ),
+            "pivot": "Strip out the AI buzzwords and sell the core workflow as a simple, high-margin B2B utility.",
+            "funded": False,
+            "closing": "The committee unanimously passes on this round. Come back when you have paying customers instead of slide transitions.",
+        }
+
+    partner_results: list[PartnerResult] = []
+    for p in seats:
+        if on_event:
+            on_event(Event(kind="partner_start", partner=p))
+        c_text, d_idx, m_score, r_months, zinger = critiques.get(
+            p.id,
+            ("The partner is thoroughly unimpressed with this pitch.", 85, 1, 2, "A pitch without a business model."),
+        )
+        pr = PartnerResult(
+            partner=p,
+            verdict=PartnerVerdict(
+                critique=c_text,
+                delusion_index=d_idx,
+                moat_score=m_score,
+                runway_months=r_months,
+                zinger=zinger,
+            ),
+            latency_s=0.4,
+            input_tokens=1000,
+            output_tokens=450,
+            thinking="Evaluating customer willingness to pay and competitive dynamics.",
+        )
+        partner_results.append(pr)
+        if on_event:
+            on_event(Event(kind="partner_done", partner=p, result=pr))
+
+    if on_event:
+        on_event(Event(kind="shark_start", partner=SHARK))
+
+    shark_verdict = SharkVerdict(
+        delusion_index=shark_data["delusion"],
+        moat_score=shark_data["moat"],
+        runway_months=shark_data["runway"],
+        pre_money_val=shark_data["pre_money"],
+        term_sheet=shark_data["sheet"],
+        the_pivot=shark_data["pivot"],
+        funded=shark_data["funded"],
+        closing_line=shark_data["closing"],
+    )
+
+    if on_event:
+        on_event(Event(kind="shark_done", partner=SHARK))
+
+    return SyndicateResult(
+        pitch=pitch_clean,
+        model=model,
+        partners=partner_results,
+        shark=shark_verdict,
+        shark_thinking="Synthesising partner critiques into term sheet and valuation.",
+        latency_s=1.8,
+        input_tokens=3200,
+        output_tokens=1400,
+        session_id=session_id or obs.new_session_id(),
+        is_mock=True,
+    )
+
+
 __all__ = [
     "DEFAULT_EFFORT",
     "DEFAULT_MODEL",
@@ -781,6 +974,7 @@ __all__ = [
     "SyndicateResult",
     "TermSheet",
     "convene",
+    "fallback_verdict",
     "resolve_panel",
     "setup_observability",
     "term_sheet_text",

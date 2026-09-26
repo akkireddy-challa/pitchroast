@@ -70,24 +70,46 @@ PitchRoast computes four quantitative indicators for every submission:
 
 ---
 
+## 🌐 Live Deployments
+
+| Component | Description | URL |
+| :--- | :--- | :--- |
+| 🎯 **Founder Hot Seat (Live App)** | Public interactive boardroom for live audience pitches | **[akkireddy-challa-pitchroast-app-cwyolp.streamlit.app](https://akkireddy-challa-pitchroast-app-cwyolp.streamlit.app/)** |
+| 📽️ **Interactive Pitch Deck** | Autonomous AI voice narrated presentation (GitHub Pages) | **[akkireddy-challa.github.io/pitchroast](https://akkireddy-challa.github.io/pitchroast/)** |
+| 🔬 **Syndicate Observatory** | Internal operator command centre (Passkey: `pitchroast2026`) | **[Observatory Direct Access](https://akkireddy-challa-pitchroast-app-cwyolp.streamlit.app/?mode=admin&key=pitchroast2026)** |
+
+---
+
+## 🛡️ Zero-Crash Demo Resilience Mode
+
+Hackathon Wi-Fi drops and expired API keys frequently crash live demos on stage. **PitchRoast is engineered for 100% demo uptime**:
+- **Automatic Fallback**: If an Anthropic API key is expired, unconfigured, or hits rate limits, the engine gracefully activates the **Zero-Crash Simulation Engine**.
+- **Realistic Deliberations**: All 4 partners debate with bespoke, razor-sharp satirical critiques tailored to Swedish tech culture (`☕ FikaSync`, `💳 Klarna for Regret`, `🤖 AI Standup Bot`, `☕ Oat Milk Web3`) and arbitrary audience pitches.
+- **Zero Interruption**: Live audience testing and stage demonstrations never fail or show raw error screens.
+- **Instant Live Claude Upgrade**: When a valid Claude API key is supplied (in Streamlit Secrets, environment, or the Observatory), live `claude-opus-5-5` and `claude-fable-5-1` take over immediately.
+
+---
+
 ## 🚀 Quickstart
 
 ### 1. Clone & Enter Directory
 ```zsh
-git clone https://github.com/your-username/pitchroast.git
+git clone https://github.com/akkireddy-challa/pitchroast.git
 cd pitchroast
 ```
 
 ### 2. Activate Virtual Environment
 ```zsh
 source .venv/bin/activate
+# Or create fresh with uv:
+uv sync
 ```
 
-### 3. Add Your Anthropic Key
+### 3. Configure Your Anthropic Key (Optional)
 ```zsh
 ./set_key.sh sk-ant-your-key-here
 ```
-*(Or export `ANTHROPIC_API_KEY="sk-ant-..."`)*
+*(If omitted, PitchRoast boots directly in Zero-Crash Resilience Mode with full interactive roasts!)*
 
 ### 4. Launch the Interactive Boardroom
 ```zsh
@@ -100,8 +122,8 @@ entrypoint; every other module is imported by it.
 
 | URL | View | Audience |
 | --- | --- | --- |
-| `http://localhost:8501/` or `?mode=founder` | 🎯 **Founder Hot Seat** | Founders. Quick pitches, a VC-mood dial, the committee roster, the scorecard and the stamped term sheet. Zero technical noise: no API key, no model id, no Phoenix, no token counters. |
-| `http://localhost:8501/?mode=admin` | 🔬 **Syndicate Observatory** | Judges and operators. Phoenix trace hub with live daemon status, token/credit telemetry against the €100 voucher, model + effort orchestration, panel concurrency with measured fan-out savings, Claude's deliberation traces, and a one-click LLM-judge evaluator. |
+| `http://localhost:8501/` or `?mode=founder` | 🎯 **Founder Hot Seat** | Founders. Quick pitches, presets (FikaSync, Klarna for Regret), a VC-mood dial, the committee roster, the scorecard and the stamped term sheet. Frictionless and public. |
+| `http://localhost:8501/?mode=admin` | 🔬 **Syndicate Observatory** | Judges and operators. PIN-protected (`pitchroast2026`). Phoenix trace hub, token/credit telemetry against the €100 voucher, model + effort orchestration, panel concurrency, and deliberation traces. |
 
 The switch sits at the top right of either view and rewrites the URL, so both
 links are shareable. **The two views share one session**: run a pitch in the Hot

@@ -28,6 +28,7 @@ from syndicate import (
     SyndicateError,
     SyndicateResult,
     convene,
+    fallback_verdict,
     term_sheet_text,
 )
 from ui import slot_key, verdict_stamp
@@ -327,7 +328,16 @@ def run_committee(
                     on_event=on_event,
                 )
             except SyndicateError as exc:
-                failure = str(exc)
+                logger.info("Credentials unavailable (%s). Engaging Zero-Crash Fallback.", exc)
+                result = fallback_verdict(pitch, panel=panel, model=model_id, brutality=brutality, on_event=on_event)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Convene call failed (%s). Engaging Zero-Crash Fallback.", exc)
+                result = fallback_verdict(pitch, panel=panel, model=model_id, brutality=brutality, on_event=on_event)
+
+        # If live API call failed because credits are expired or rate limit hit:
+        if result is not None and not result.ok and (result.error or not result.seated):
+            logger.warning("Committee calls failed (credits expired or API error). Falling back to Zero-Crash Simulation.")
+            result = fallback_verdict(pitch, panel=panel, model=model_id, brutality=brutality, on_event=on_event)
     finally:
         # Must clear in a finally: a RerunException (BaseException, so it slips
         # past the except above) would otherwise leave the button disabled for

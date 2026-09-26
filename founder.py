@@ -210,13 +210,6 @@ def render() -> None:
                 "Nobody is seated on the panel — the committee cannot convene.",
                 icon=":material/person_off:",
             )
-        elif not state.api_key():
-            # Deliberately not "add an API key": a founder cannot act on that,
-            # and naming the credential on a projector is worse than useless.
-            st.error(
-                "The syndicate is offline. Grab the operator.",
-                icon=":material/cloud_off:",
-            )
         else:
             should_run = True
 
