@@ -25,4 +25,4 @@ export ANTHROPIC_BASE_URL="https://api.anthropic.com"
 unset ANTHROPIC_CUSTOM_HEADERS
 
 echo "🚀 Starting Claude Code pointing to public api.anthropic.com (Key: ${ANTHROPIC_API_KEY:0:12}...)"
-exec /Users/aue729/.local/bin/claude --setting-sources project,local "$@"
+exec claude --setting-sources project,local "$@"
