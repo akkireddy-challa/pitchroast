@@ -6,7 +6,7 @@
 [![Event](https://img.shields.io/badge/Claude%20Community-Stockholm%20Build%20Day-FF4500.svg)](https://luma.com/claudecommunity)
 [![Track](https://img.shields.io/badge/Challenge-Track%201%3A%20Delight-success.svg)](#)
 [![Presentation Deck](https://img.shields.io/badge/Live%20Presentation-GitHub%20Pages-blue.svg)](https://akkireddy-challa.github.io/pitchroast/)
-[![Live App](https://img.shields.io/badge/Live%20App-Streamlit%20Cloud-red.svg)](https://pitchroast.streamlit.app)
+[![Live App](https://img.shields.io/badge/Live%20App-Streamlit%20Cloud-red.svg)](https://akkireddy-challa-pitchroast-app-cwyolp.streamlit.app/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](#)
 
 > **Created by Akkireddy Challa** for the **Stockholm | Fable 5.1 x Opus 5.5 Build Day** (Track 1: Delight). Presented by **Claude Community Stockholm**.  

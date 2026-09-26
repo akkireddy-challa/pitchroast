@@ -790,10 +790,11 @@
       </div>
 
       <div style="margin-top: 2rem; display: flex; gap: 16px; justify-content: center; align-items: center; flex-wrap: wrap;">
-        <a id="liveAppLink" href="https://pitchroast.streamlit.app" target="_blank" class="btn btn-primary" style="font-size: 1.1rem; padding: 12px 28px; text-decoration: none;">
+        <a id="liveAppLink" href="https://akkireddy-challa-pitchroast-app-cwyolp.streamlit.app/" target="_blank" class="btn btn-primary" style="font-size: 1.1rem; padding: 12px 28px; text-decoration: none;">
           🎯 Open Live Hot Seat App ➔
         </a>
         <button class="btn" onclick="goToSlide(1)">🔄 Replay Deck</button>
+        <button class="btn" style="padding: 10px 16px; font-size: 0.9rem;" onclick="setCustomAppUrl()">⚙️ Set App URL</button>
       </div>
 
       <div style="margin-top: 1.5rem; color: #94A3B8; font-size: 0.9rem;">
@@ -1061,13 +1062,30 @@
       }
     });
 
-    // Dynamic App URL resolution (e.g. ?app=https://pitchroast.streamlit.app or custom cloud run url)
-    const urlParams = new URLSearchParams(window.location.search);
-    const customAppUrl = urlParams.get('app');
-    if (customAppUrl) {
-      const linkEl = document.getElementById('liveAppLink');
-      if (linkEl) linkEl.href = customAppUrl;
+    // Dynamic App URL resolution with localStorage persistence
+    function getStoredAppUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramUrl = urlParams.get('app');
+      if (paramUrl) {
+        localStorage.setItem('pitchroast_app_url', paramUrl);
+        return paramUrl;
+      }
+      return localStorage.getItem('pitchroast_app_url') || 'https://akkireddy-challa-pitchroast-app-cwyolp.streamlit.app/';
     }
+
+    function setCustomAppUrl() {
+      const current = getStoredAppUrl();
+      const next = prompt('Enter your live Streamlit App URL:', current);
+      if (next && next.trim()) {
+        localStorage.setItem('pitchroast_app_url', next.trim());
+        const linkEl = document.getElementById('liveAppLink');
+        if (linkEl) linkEl.href = next.trim();
+        alert('Live App URL updated to: ' + next.trim());
+      }
+    }
+
+    const liveBtn = document.getElementById('liveAppLink');
+    if (liveBtn) liveBtn.href = getStoredAppUrl();
 
     updateSlide();
   </script>
