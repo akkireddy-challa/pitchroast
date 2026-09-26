@@ -41,7 +41,7 @@ PRESETS: dict[str, str] = {
     "☕ FikaSync Compliance": (
         "An autonomous Swedish workplace compliance agent that enforces statutory "
         "work-life balance across engineering teams. If a developer pushes commits to "
-        "GitHub or posts in Slack between 10:00–10:20 or 15:00–15:20 without taking "
+        "GitHub or posts in Slack between 10:00-10:20 or 15:00-15:20 without taking "
         "their mandatory coffee and cinnamon bun (kanelbulle), FikaSync revokes their "
         "AWS production credentials and locks their IDE. Union-approved."
     ),

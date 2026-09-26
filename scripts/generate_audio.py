@@ -1,5 +1,6 @@
-import subprocess
 import os
+import subprocess
+from pathlib import Path
 
 SLIDES = [
     (1, "Hello Epicenter Stockholm! I am the AI clone of human Akkireddy Challa. My human original built this entire project tonight for the Claude Hackathon. But why have a tired human pitch on stage when you can have a superior AI clone do it with zero stage fright? Welcome to PitchRoast! Let's see why your business idea is probably terrible."),
@@ -9,40 +10,39 @@ SLIDES = [
     (5, "We built two doors into one app. The Hot Seat gives founders a clean, funny boardroom with an angel-to-dragon mood slider and zero developer clutter. Meanwhile, the Observatory gives hackathon judges real-time telemetry, Arize Phoenix tracing, and live tracking of our one hundred Euro Anthropic voucher."),
     (6, "Why is it so fast? Our multi-agent parallel fan-out runs all three judges at the exact same second using Anthropic's Claude Fable and Opus. Latency drops from forty-eight seconds down to fourteen seconds, saving sixty-five percent of your time."),
     (7, "PitchRoast gives founders the honest truth in fifteen seconds, costing zero dollars instead of giving away twenty percent of your company. On behalf of human Akkireddy Challa and AI clone Akkireddy: our official verdict? PitchRoast is funded!"),
-    (8, "And now, talk is cheap! We need one brave founder from this Epicenter audience right now! Shout out your startup idea in one sentence, and let our four AI judges roast you live on screen in fifteen seconds. Who has the courage to enter the Hot Seat?")
+    (8, "And now, talk is cheap! We need one brave founder from this Epicenter audience right now! Shout out your startup idea in one sentence, and let our four AI judges roast you live on screen in fifteen seconds. Who has the courage to enter the Hot Seat?"),
 ]
 
-out_dirs = [
-    "/Users/aue729/AIEXP/pitchroast/docs/audio",
-    "/Users/aue729/AIEXP/pitchroast/audio"
-]
+repo_root = Path(__file__).resolve().parent.parent
+audio_dir = repo_root / "audio"
+docs_audio_dir = repo_root / "docs" / "audio"
 
-for d in out_dirs:
-    os.makedirs(d, exist_ok=True)
+for d in [audio_dir, docs_audio_dir]:
+    d.mkdir(parents=True, exist_ok=True)
 
 voice = "Daniel"
 
 for slide_num, text in SLIDES:
     print(f"Generating audio for Slide {slide_num}...")
-    aiff_path = f"/Users/aue729/AIEXP/pitchroast/docs/audio/slide{slide_num}.aiff"
-    m4a_path = f"/Users/aue729/AIEXP/pitchroast/docs/audio/slide{slide_num}.m4a"
-    wav_path = f"/Users/aue729/AIEXP/pitchroast/docs/audio/slide{slide_num}.wav"
-    
-    # 1. Generate AIFF with say
-    subprocess.run(["say", "-v", voice, "-r", "175", text, "-o", aiff_path], check=True)
-    
+    aiff_path = audio_dir / f"slide{slide_num}.aiff"
+    m4a_path = audio_dir / f"slide{slide_num}.m4a"
+    wav_path = audio_dir / f"slide{slide_num}.wav"
+
+    # 1. Generate AIFF with say (macOS)
+    subprocess.run(["say", "-v", voice, "-r", "175", text, "-o", str(aiff_path)], check=True)
+
     # 2. Convert to m4a (aac)
-    subprocess.run(["afconvert", "-f", "m4af", "-d", "aac", aiff_path, m4a_path], check=True)
-    
+    subprocess.run(["afconvert", "-f", "m4af", "-d", "aac", str(aiff_path), str(m4a_path)], check=True)
+
     # 3. Convert to wav (universal)
-    subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16@22050", aiff_path, wav_path], check=True)
-    
-    # Also copy to root audio/
-    subprocess.run(["cp", m4a_path, f"/Users/aue729/AIEXP/pitchroast/audio/slide{slide_num}.m4a"], check=True)
-    subprocess.run(["cp", wav_path, f"/Users/aue729/AIEXP/pitchroast/audio/slide{slide_num}.wav"], check=True)
-    
+    subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16@22050", str(aiff_path), str(wav_path)], check=True)
+
+    # Copy to docs/audio as well
+    subprocess.run(["cp", str(m4a_path), str(docs_audio_dir / f"slide{slide_num}.m4a")], check=True)
+    subprocess.run(["cp", str(wav_path), str(docs_audio_dir / f"slide{slide_num}.wav")], check=True)
+
     # Remove temporary aiff
-    if os.path.exists(aiff_path):
+    if aiff_path.exists():
         os.remove(aiff_path)
 
 print("All audio files generated successfully!")
