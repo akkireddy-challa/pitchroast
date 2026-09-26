@@ -21,15 +21,15 @@ flowchart TD
     subgraph Agent_Orchestration ["🤖 Multi-Agent Syndicate Committee"]
         Hotseat & Observatory --> Orchestrator[Syndicate Engine]
         
-        Orchestrator -->|Parallel Async Fan-out| PartnerA[Sven Lindström<br/>Pragmatic Nordic B2B]
-        Orchestrator -->|Parallel Async Fan-out| PartnerB[Balthazar Sterling<br/>High-Status Cynic]
-        Orchestrator -->|Parallel Async Fan-out| PartnerC[Nova Spark<br/>Hyper-Growth Visionary]
+        Orchestrator -->|Parallel Async Fan-out| PartnerA[Max Market<br/>Market Sceptic]
+        Orchestrator -->|Parallel Async Fan-out| PartnerB[Penny Pinch<br/>Financial Czar]
+        Orchestrator -->|Parallel Async Fan-out| PartnerC[Tech Toby<br/>Systems CTO]
         
         PartnerA --> PartnerAgg[Partner Roasts & Scores]
         PartnerB --> PartnerAgg
         PartnerC --> PartnerAgg
         
-        PartnerAgg --> LeadPartner[Lead Partner Synthesis<br/>Consensus, Delusion Index & Term Sheet]
+        PartnerAgg --> LeadPartner[Boss Shark Synthesis<br/>Consensus, Delusion Index & Term Sheet]
     end
 
     subgraph Observability_Layer ["🔭 Observability & Telemetry (Phoenix)"]
@@ -53,50 +53,50 @@ flowchart TD
 
 ## 🧠 Multi-Agent Parallel Fan-Out
 
-When a founder submits a pitch (text or pitch deck PDF), the `SyndicateEngine` triggers a parallel multi-agent evaluation:
+When a founder submits a pitch (text or pitch deck preset), the `SyndicateEngine` triggers a parallel multi-agent evaluation:
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Founder as Founder
     participant Engine as SyndicateEngine (Orchestrator)
-    participant Sven as Sven Lindström (B2B Partner)
-    participant Balthazar as Balthazar (Cynical Partner)
-    participant Nova as Nova Spark (Moonshot Partner)
-    participant Lead as Lead Partner Synthesizer
+    participant Max as Max Market (Market Sceptic)
+    participant Penny as Penny Pinch (Financial Czar)
+    participant Toby as Tech Toby (Systems CTO)
+    participant Shark as Boss Shark (Managing Partner)
     participant Phoenix as Arize Phoenix Tracing
 
-    Founder->>Engine: Submit Pitch ($4M ARR, AI Catapult)
+    Founder->>Engine: Submit Pitch (TAM, ARR, Product)
     Engine->>Phoenix: Start Root Span ("syndicate_evaluation")
     
-    par Async Fan-Out (Parallel LLM Calls)
-        Engine->>Sven: Evaluate Unit Economics & Retention
-        Engine->>Balthazar: Evaluate Moat & Defensibility
-        Engine->>Nova: Evaluate TAM & Exit Velocity
+    par Async Fan-Out (Parallel Claude Calls)
+        Engine->>Max: Evaluate TAM & Customer Demand
+        Engine->>Penny: Evaluate CAC/LTV & Cash Burn
+        Engine->>Toby: Evaluate Architecture & Tech Debt
     and Phoenix Instrumentation
-        Sven-->>Phoenix: Record Tokens, Latency, Sentiment
-        Balthazar-->>Phoenix: Record Tokens, Latency, Sentiment
-        Nova-->>Phoenix: Record Tokens, Latency, Sentiment
+        Max-->>Phoenix: Record Tokens, Latency, Evaluation
+        Penny-->>Phoenix: Record Tokens, Latency, Evaluation
+        Toby-->>Phoenix: Record Tokens, Latency, Evaluation
     end
 
-    Sven-->>Engine: Partner Evaluation 1
-    Balthazar-->>Engine: Partner Evaluation 2
-    Nova-->>Engine: Partner Evaluation 3
+    Max-->>Engine: Partner Evaluation (Roast + Moat Critique)
+    Penny-->>Engine: Partner Evaluation (Burn + Runway Critique)
+    Toby-->>Engine: Partner Evaluation (Wrapper + Fragility Critique)
 
-    Engine->>Lead: Synthesize Evaluations + Draft Term Sheet
-    Lead-->>Phoenix: Record Synthesis Span + Cost Calculation
-    Lead-->>Engine: Structured Verdict (Score, Delusion Index, Term Sheet)
+    Engine->>Shark: Synthesize Evaluations + Draft Term Sheet
+    Shark-->>Phoenix: Record Synthesis Span + Cost Calculation
+    Shark-->>Engine: Structured Verdict (Scores, Delusion Index, Term Sheet)
     Engine->>Founder: Streamlit Generative UI (Badges, Roasts, Audio, PDF)
 ```
 
-### Partner Personas & Temperature Matrix
+### Partner Personas & Focus Matrix
 
-| Partner | Role | Focus Area | Claude Temp | Tone |
-| :--- | :--- | :--- | :---: | :--- |
-| **Sven Lindström** | Nordic Managing Partner | EBITDA, NRR, churn, sustainable CAC | `0.4` | Dry, quantitative, pragmatist |
-| **Balthazar Sterling** | Sand Hill Road Cynic | Moats, Big Tech copycats, margin erosion | `0.7` | Sarcastic, high-status, devastating |
-| **Nova Spark** | Moonshot Accelerator GP | TAM, 100x velocity, frontier AI flywheel | `0.9` | High-energy, visionary, hype-detector |
-| **Lead Partner** | Syndicate Chair | Consensus, valuation discount, term sheet | `0.5` | Decisive, institutional, formal |
+| Partner | Role | Focus Domain | Architectural Focus |
+| :--- | :--- | :--- | :--- |
+| **Max Market** | The Market Sceptic | TAM, customer demand, buzzwords | Exposes fake demand, inflated TAM, and unvalidated claims |
+| **Penny Pinch** | The Financial Czar | Unit economics, CAC/LTV, cash burn | Deconstructs negative margins, runaway burn, and pricing traps |
+| **Tech Toby** | The Systems CTO | Architecture, wrappers, technical debt | Evaluates API fragility, duct-tape code, and AI wrapper risk |
+| **Boss Shark** | Managing Partner | Consensus, valuation, term sheet | Synthesizes committee debate, issues covenants & 1% Pivot |
 
 ---
 
@@ -104,12 +104,12 @@ sequenceDiagram
 
 PitchRoast integrates with **Arize Phoenix** (OpenTelemetry OSS Hub):
 
-1. **Root Span**: Wraps the entire pitch evaluation transaction.
+1. **Root Span**: Wraps the entire pitch evaluation transaction (`syndicate_evaluation`).
 2. **Child Spans**:
-   - `partner_evaluation_sven`: prompt tokens, completion tokens, latency, cost.
-   - `partner_evaluation_balthazar`: prompt tokens, completion tokens, latency, cost.
-   - `partner_evaluation_nova`: prompt tokens, completion tokens, latency, cost.
-   - `lead_synthesis`: prompt tokens, completion tokens, latency, cost.
+   - `partner_evaluation_marc`: prompt tokens, completion tokens, latency, cost.
+   - `partner_evaluation_karen`: prompt tokens, completion tokens, latency, cost.
+   - `partner_evaluation_torvalds`: prompt tokens, completion tokens, latency, cost.
+   - `lead_synthesis_gekko`: prompt tokens, completion tokens, latency, cost.
 3. **Evals**:
    - **Toxicity / Snark Metric**: Measures partner bite vs. constructive advice.
    - **Delusion Calibration**: Cross-references founder valuation claim against market benchmarks.

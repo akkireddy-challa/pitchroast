@@ -35,10 +35,10 @@ First-time founders and hackathon participants pitch early concepts to mentors, 
 - **FR-1.3**: Support downloadable sample 1-page pitch decks for each preset.
 
 ### FR-2: Multi-Agent Parallel Fan-Out (Boardroom Deliberation)
-- **FR-2.1**: Concurrently trigger 3 distinct partner agents using `asyncio.gather` to minimize end-to-end latency:
-  - **Sven Lindström** (Nordic B2B Partner, temp 0.4): Focus on EBITDA, NRR, churn, sustainable CAC.
-  - **Balthazar Sterling** (Sand Hill Road Cynic, temp 0.7): Focus on defensibility, moat erosion, tech wrappers.
-  - **Nova Spark** (Moonshot GP, temp 0.9): Focus on TAM, velocity, category creation.
+- **FR-2.1**: Concurrently trigger 3 distinct partner agents using ThreadPoolExecutor to minimize end-to-end latency:
+  - **Max Market** (The Market Sceptic): Focus on TAM delusions, customer demand, and buzzword inflation.
+  - **Penny Pinch** (The Financial Czar): Focus on unit economics, CAC/LTV divergence, and runaway cash burn.
+  - **Tech Toby** (The Systems CTO): Focus on tech stack defensibility, AI wrappers, and architecture debt.
 - **FR-2.2**: Partner Recusal: Allow users or operators to deselect partners to reduce API cost.
 
 ### FR-3: Lead Partner Synthesis & Contract Generation

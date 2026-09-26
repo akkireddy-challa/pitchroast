@@ -58,5 +58,5 @@
   </g>
 
   <!-- Footer Tag -->
-  <text x="600" y="555" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" fill="#FBBF24">&#10024; Created by Akkireddy Challa &bull; Powered by Anthropic Claude</text>
+  <text x="600" y="555" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" fill="#FBBF24">&#10024; Created by Akkireddy Challa &#8226; Powered by Anthropic Claude</text>
 </svg>
