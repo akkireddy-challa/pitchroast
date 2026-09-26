@@ -77,9 +77,8 @@ def generate_with_elevenlabs(api_key: str, voice_id: str = "JBFqnCBsd6RMkjVDRZzb
 
         req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers, method="POST")
         try:
-            with urllib.request.urlopen(req) as response:
-                with open(mp3_path, "wb") as f:
-                    f.write(response.read())
+            with urllib.request.urlopen(req) as response, open(mp3_path, "wb") as f:
+                f.write(response.read())
 
             # Convert mp3 to m4a (aac) and wav
             subprocess.run(["afconvert", "-f", "m4af", "-d", "aac", str(mp3_path), str(m4a_path)], check=True)
