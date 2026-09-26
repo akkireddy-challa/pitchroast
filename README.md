@@ -1,6 +1,7 @@
 # PitchRoast 🔥 — The Autonomous Venture Syndicate
 
 [![Creator](https://img.shields.io/badge/Creator-Akkireddy%20Challa-FF8C00.svg)](https://github.com/akkireddy-challa)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Akkireddy%20Challa-0A66C2.svg?logo=linkedin)](https://www.linkedin.com/in/akkireddy-challa/)
 [![Anthropic Claude](https://img.shields.io/badge/Powered%20by-Anthropic%20Claude-8A2BE2.svg)](https://console.anthropic.com)
 [![Observability](https://img.shields.io/badge/Observability-Arize%20Phoenix%20OSS-orange.svg)](https://github.com/Arize-ai/phoenix)
 [![Event](https://img.shields.io/badge/Claude%20Community-Stockholm%20Build%20Day-FF4500.svg)](https://luma.com/claudecommunity)
