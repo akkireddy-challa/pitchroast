@@ -15,6 +15,10 @@
 
 ---
 
+<p align="center">
+  <img src="preview.svg" alt="PitchRoast Banner" width="100%">
+</p>
+
 ## ⚡ The Concept
 
 Every founder has pitched an investor and received the standard diplomatic reply: *"Great deck, let's keep in touch!"* 
@@ -22,6 +26,19 @@ Every founder has pitched an investor and received the standard diplomatic reply
 In Silicon Valley and Nordic startup hubs, that's code for: *"Your unit economics are broken and a college student could build your product this weekend."*
 
 **PitchRoast eliminates polite lies.** It convenes a four-partner investment committee that analyzes your startup pitch in parallel, computes quantitative risk metrics, debates your business model in real time, and drafts an absurd satirical term sheet.
+
+### 👶 Explain It Like I'm 10 (The 30-Second Pitch)
+> Imagine you invented a robot that cleans your bedroom, but it costs \$1,000,000 to build and sometimes throws your sneakers out the window!
+> 
+> If you ask your friends, they'll say: *"Oh wow, that is so cool!"* — because they are nice and don't want to hurt your feelings. But you just wasted your entire allowance on a sneaker-catapult.
+> 
+> When you put your idea into **PitchRoast**:
+> * **🕶️ Max Market** laughs: *"Nobody on Earth will pay a million dollars to clean a room!"*
+> * **💰 Penny Pinch** counts coins: *"You are spending \$100 to make \$1. You'll be broke by Tuesday!"*
+> * **💻 Tech Toby** looks under the hood: *"Hey, this isn't futuristic AI, you just taped an iPad to a broom!"*
+> * **🦈 Boss Shark** makes the final call: *"Deal! But only if you stop throwing shoes and sell the camera to toy makers instead!"*
+> 
+> In **15 seconds**, four funny AI robots tell you the honest truth, protect your piggy bank, and give you a real plan that actually works.
 
 ---
 

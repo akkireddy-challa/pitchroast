@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#FF4500" stop-opacity="0.25"/>
+      <stop offset="60%" stop-color="#0B1120" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#060911" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF4500"/>
+      <stop offset="50%" stop-color="#FF8C00"/>
+      <stop offset="100%" stop-color="#FFD700"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0B1120"/>
+  <rect width="1200" height="630" fill="url(#bgGlow)"/>
+
+  <!-- Border Frame -->
+  <rect x="30" y="30" width="1140" height="570" rx="24" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+
+  <!-- Event Pill -->
+  <rect x="375" y="90" width="450" height="42" rx="21" fill="rgba(255,69,0,0.12)" stroke="rgba(255,69,0,0.35)" stroke-width="1.5"/>
+  <circle cx="400" cy="111" r="5" fill="#10B981" filter="url(#glow)"/>
+  <text x="420" y="117" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="14" font-weight="700" fill="#FF8C00" letter-spacing="1.5">CLAUDE COMMUNITY STOCKHOLM • TRACK 1: DELIGHT</text>
+
+  <!-- Main Wordmark -->
+  <text x="600" y="270" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="96" font-weight="900" fill="url(#textGrad)" letter-spacing="-3">PitchRoast &#128293;</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="340" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="28" font-weight="600" fill="#F8FAFC">The AI Startup Shark Tank — Honest Truth in 15 Seconds</text>
+  <text x="600" y="385" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="20" font-weight="500" fill="#94A3B8">Four funny AI judges debate and test your business idea with no polite lies!</text>
+
+  <!-- 4 Partner Badges -->
+  <g transform="translate(200, 440)">
+    <rect x="0" y="0" width="180" height="54" rx="12" fill="rgba(30,41,59,0.7)" stroke="rgba(255,255,255,0.1)"/>
+    <text x="90" y="26" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="800" fill="#F8FAFC">&#128374;&#65039; Max Market</text>
+    <text x="90" y="44" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="600" fill="#FF8C00">The Idea Judge</text>
+
+    <rect x="205" y="0" width="180" height="54" rx="12" fill="rgba(30,41,59,0.7)" stroke="rgba(255,255,255,0.1)"/>
+    <text x="295" y="26" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="800" fill="#F8FAFC">&#128176; Penny Pinch</text>
+    <text x="295" y="44" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="600" fill="#FF8C00">The Money Boss</text>
+
+    <rect x="410" y="0" width="180" height="54" rx="12" fill="rgba(30,41,59,0.7)" stroke="rgba(255,255,255,0.1)"/>
+    <text x="500" y="26" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="800" fill="#F8FAFC">&#128187; Tech Toby</text>
+    <text x="500" y="44" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="600" fill="#FF8C00">The Tech Builder</text>
+
+    <rect x="615" y="0" width="180" height="54" rx="12" fill="rgba(30,41,59,0.7)" stroke="rgba(255,69,0,0.4)"/>
+    <text x="705" y="26" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="800" fill="#FFD700">&#129416; Boss Shark</text>
+    <text x="705" y="44" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="600" fill="#FF8C00">The Final Verdict</text>
+  </g>
+
+  <!-- Footer Tag -->
+  <text x="600" y="555" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="15" font-weight="700" fill="#FBBF24">&#10024; Created by Akkireddy Challa &bull; Powered by Anthropic Claude</text>
+</svg>

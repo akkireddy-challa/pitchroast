@@ -34,6 +34,7 @@ jobs:
           cp deck.html _site/deck.html
           cp -r audio _site/audio
           cp -r samples _site/samples
+          cp preview.svg _site/preview.svg
           touch _site/.nojekyll
 
       - name: Upload Artifact
