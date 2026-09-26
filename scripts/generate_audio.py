@@ -10,35 +10,35 @@ from pathlib import Path
 SLIDES = [
     (
         1,
-        "Welcome to Claude Community Stockholm! I am the AI clone of Akkireddy Challa, presenting for the Fable 5.1 and Opus 5.5 Build Day. Meet PitchRoast: the satirical AI venture committee that roasts your startup pitch in fifteen seconds."
+        "Welcome to Claude Community Stockholm! I'm the AI clone of Akkireddy Challa. Meet PitchRoast: the satirical AI venture committee that roasts your startup in 15 seconds."
     ),
     (
         2,
-        "Founders waste months on polite investor lies like 'Great deck, let's stay in touch.' In reality, your unit economics are broken. PitchRoast cuts through the noise with instant, brutal, hilarious honesty."
+        "Investors always lie with polite rejections like 'Let's stay in touch.' In reality, your unit economics are broken. PitchRoast gives you the honest truth instantly."
     ),
     (
         3,
-        "Our four AI judges debate in parallel: Max Market tears down fake demand; Penny Pinch attacks your burn rate; Tech Toby exposes duct-tape code; and Boss Shark issues the final deal or no deal."
+        "Four AI judges debate in parallel: Max Market attacks fake demand; Penny Pinch audits your burn; Tech Toby exposes duct-tape code; and Boss Shark decides Deal or No Deal."
     ),
     (
         4,
-        "We tested real Swedish ideas live: Klarna for Regret, splitting bad 3 AM decisions into four installments; and FikaSync, locking your computer if you skip your 3 PM cinnamon bun."
+        "We tested real Swedish ideas: Klarna for Regret, splitting 3 AM shame into four payments; and FikaSync, locking your IDE if you skip your afternoon cinnamon bun!"
     ),
     (
         5,
-        "Two doors, one engine: The Founder Hot Seat gives founders a clean, satirical boardroom. The Syndicate Observatory gives operators Phoenix tracing, token telemetry, and PIN-protected controls."
+        "Two doors, one engine: The Founder Hot Seat gives you a clean boardroom; the Syndicate Observatory gives operators Phoenix tracing, token telemetry, and PIN security."
     ),
     (
         6,
-        "Why is it so fast? Our parallel fan-out architecture runs all specialists concurrently on Anthropic Claude. Latency drops from 45 seconds down to 14 seconds, with automatic zero-crash fallback resilience."
+        "Our parallel fan-out architecture cuts latency by 68 percent using Claude Opus and Fable, backed by zero-crash offline resilience."
     ),
     (
         7,
-        "PitchRoast delivers quantitative risk scores, hilarious covenants, and the genuine one percent pivot to real revenue. PitchRoast turns diplomatic polite rejection into constructive delight."
+        "Quantitative risk scores, hilarious covenants, and a genuine one percent pivot to real revenue. PitchRoast turns polite lies into constructive delight."
     ),
     (
         8,
-        "Now, let's put it to the test! Give us one brave founder from this Claude Community audience right now. Shout out your idea, and let our four AI judges roast you live on screen in fifteen seconds!"
+        "Now it's your turn! Shout out your startup idea from the audience, and let our four AI judges roast you live on screen in 15 seconds!"
     ),
 ]
 
