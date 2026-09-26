@@ -177,16 +177,30 @@ def brutality() -> float:
 
 
 def api_key() -> str:
-    """The key a run should use: the Observatory override, else the environment.
+    """The key a run should use: the Observatory override, else st.secrets, else environment.
 
     The override is never rendered back into the page — the widget is a blank
     password field every run, and this is the only reader.
     """
     typed = (st.session_state.get(K_API_KEY) or "").strip()
-    return typed or (os.getenv("ANTHROPIC_API_KEY") or "").strip()
+    if typed:
+        return typed
+    try:
+        if "ANTHROPIC_API_KEY" in st.secrets:
+            val = str(st.secrets["ANTHROPIC_API_KEY"]).strip()
+            if val:
+                return val
+    except Exception:  # noqa: BLE001
+        pass
+    return (os.getenv("ANTHROPIC_API_KEY") or "").strip()
 
 
 def env_key_present() -> bool:
+    try:
+        if "ANTHROPIC_API_KEY" in st.secrets and str(st.secrets["ANTHROPIC_API_KEY"]).strip():
+            return True
+    except Exception:  # noqa: BLE001
+        pass
     return bool((os.getenv("ANTHROPIC_API_KEY") or "").strip())
 
 

@@ -1,0 +1,8 @@
+streamlit>=1.64.0,<2
+anthropic>=1.8.0,<2
+pydantic>=2.13.0,<3
+python-dotenv>=1.2.0,<2
+arize-phoenix>=20.16.0,<21
+openinference-instrumentation-anthropic>=2.1.6,<3
+arize-phoenix-evals>=3.9.0,<4
+arize-phoenix-client>=3.5.0,<4

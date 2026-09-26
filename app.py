@@ -93,6 +93,18 @@ with st.container(horizontal=True, horizontal_alignment="right"):
     )
 
 
+def _expected_pin() -> str:
+    """Resolve expected admin PIN from st.secrets or environment."""
+    try:
+        if "ADMIN_PIN" in st.secrets:
+            val = str(st.secrets["ADMIN_PIN"]).strip()
+            if val:
+                return val
+    except Exception:  # noqa: BLE001
+        pass
+    return (os.getenv("ADMIN_PIN") or "pitchroast2026").strip()
+
+
 def _is_admin_unlocked() -> bool:
     """Check if admin view is unlocked."""
     # 1. Bypass during offline automated unit testing
@@ -100,7 +112,7 @@ def _is_admin_unlocked() -> bool:
         return True
 
     # 2. Query param secret authentication (e.g. ?mode=admin&key=pitchroast2026)
-    expected_pin = (os.getenv("ADMIN_PIN") or "pitchroast2026").strip()
+    expected_pin = _expected_pin()
     key_param = (st.query_params.get("key") or st.query_params.get("pin") or "").strip()
     if key_param and key_param == expected_pin:
         st.session_state.admin_authenticated = True
@@ -133,7 +145,7 @@ def _render_admin_lock() -> None:
         )
 
         if col2.button("Unlock Observatory", type="primary", use_container_width=True, key="unlock_obs_btn"):
-            expected = (os.getenv("ADMIN_PIN") or "pitchroast2026").strip()
+            expected = _expected_pin()
             if entered_pin.strip() == expected:
                 st.session_state.admin_authenticated = True
                 st.rerun()

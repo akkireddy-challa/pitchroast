@@ -349,9 +349,20 @@ def _client(api_key: str | None) -> anthropic.Anthropic:
     # truthy, and would otherwise mask a perfectly good environment key.
     key = (api_key or "").strip() or (os.getenv("ANTHROPIC_API_KEY") or "").strip()
     if not key:
+        try:
+            import streamlit as st
+
+            if "ANTHROPIC_API_KEY" in st.secrets:
+                val = str(st.secrets["ANTHROPIC_API_KEY"]).strip()
+                if val:
+                    key = val
+        except Exception:  # noqa: BLE001
+            pass
+
+    if not key:
         raise SyndicateError(
-            "No Anthropic API key. Set ANTHROPIC_API_KEY, run ./set_key.sh, "
-            "or paste a key into the sidebar."
+            "No Anthropic API key. Add ANTHROPIC_API_KEY to Streamlit Secrets, "
+            "set it in the environment, or paste a key into the Observatory."
         )
     # Pinned to the public API on purpose: the corporate LiteLLM proxy does not
     # carry these models and silently rewrites the model id.
