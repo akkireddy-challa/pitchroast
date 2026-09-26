@@ -8,7 +8,9 @@
 [![Track](https://img.shields.io/badge/Challenge-Track%201%3A%20Delight-success.svg)](#)
 [![Presentation Deck](https://img.shields.io/badge/Live%20Presentation-GitHub%20Pages-blue.svg)](https://akkireddy-challa.github.io/pitchroast/)
 [![Live App](https://img.shields.io/badge/Live%20App-Streamlit%20Cloud-red.svg)](https://akkireddy-challa-pitchroast-app-cwyolp.streamlit.app/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](#)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > **Created by Akkireddy Challa** for the **Stockholm | Fable 5.1 x Opus 5.5 Build Day** (Track 1: Delight). Presented by **Claude Community Stockholm**.  
 > *"An autonomous venture committee of 4 ruthless AI partners who debate, dismantle, and deliver the brutal truth no VC says to your face—complete with live agent banter and a satirical term sheet."*
@@ -233,3 +235,38 @@ If you want to speak yourself, use this simple, kid-friendly script:
 * **PDF Engine**: `fpdf2` (Dynamic executive term sheets & 1-pager pitch deck PDFs)
 * **Observability & Tracing**: Arize Phoenix OSS (OpenInference / OpenTelemetry native spans, token metrics, and latency tracking)
 * **Linter & Standards**: Ruff 0.16
+
+---
+
+## 🏛️ Open Source Architecture & Community Lifecycle
+
+PitchRoast adheres to authentic open-source engineering standards with transparent architecture, comprehensive testing, and welcoming community guidelines:
+
+| Document | Description |
+| :--- | :--- |
+| 📐 **[ARCHITECTURE.md](ARCHITECTURE.md)** | Multi-agent parallel fan-out design, OpenTelemetry tracing schema, zero-crash state machine, and dual-mode routing. |
+| 🗺️ **[ROADMAP.md](ROADMAP.md)** | Product milestones: Realtime WebRTC voice interruptions (v1.1), multimodal vision deck critique (v1.2), and multiplayer syndicate tournament (v2.0). |
+| 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** | Developer onboarding guide, local environment setup with `uv`, pre-commit hooks, and instructions for contributing new VC personas. |
+| 📋 **[CHANGELOG.md](CHANGELOG.md)** | Semantic versioning release log following the Keep a Changelog format. |
+| ⚖️ **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** | Contributor Covenant v2.1 community health standard. |
+| 🔒 **[SECURITY.md](SECURITY.md)** | Vulnerability reporting policy and API credential safety guidelines. |
+| 📄 **[LICENSE](LICENSE)** | Standard permissive MIT License attributed to Akkireddy Challa. |
+
+### 🛠️ Developer Commands (`Makefile`)
+```zsh
+make install    # Create .venv and install all dependencies with uv
+make app        # Launch the Streamlit boardroom UI
+make test       # Run all offline test suites (modes, syndicate, ui, obs)
+make check      # Run Ruff linter and formatter
+make demo       # Run the CLI multi-agent committee demo
+make eval       # Evaluate LLM roasts in Arize Phoenix
+```
+
+---
+
+## 📄 License & Attribution
+
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
+
+Built with ❤️ by **[Akkireddy Challa](https://www.linkedin.com/in/akkireddy-challa/)** for the **Claude Community Stockholm Build Day**.
+
