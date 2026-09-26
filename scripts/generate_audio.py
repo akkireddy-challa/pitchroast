@@ -50,8 +50,8 @@ for d in [audio_dir, docs_audio_dir]:
     d.mkdir(parents=True, exist_ok=True)
 
 
-def generate_with_elevenlabs(api_key: str, voice_id: str = "JBFqnCBsd6RMkjVDRZzb"):
-    """Generate audio using ElevenLabs API (Voice: George / Adam / custom)."""
+def generate_with_elevenlabs(api_key: str, voice_id: str = "nPczCjzI2devNBz1zQrb"):
+    """Generate audio using ElevenLabs API (Voice: Brian - Resonant, Confident)."""
     print("🎙️ Generating hyper-realistic audio using ElevenLabs API...")
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
 
@@ -129,7 +129,7 @@ def generate_with_macos(voice: str = "Daniel"):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate PitchRoast narration audio tracks")
     parser.add_argument("--api-key", help="ElevenLabs API Key (optional)")
-    parser.add_argument("--voice-id", default="JBFqnCBsd6RMkjVDRZzb", help="ElevenLabs Voice ID")
+    parser.add_argument("--voice-id", default="nPczCjzI2devNBz1zQrb", help="ElevenLabs Voice ID (Brian)")
     parser.add_argument("--macos-voice", default="Daniel", help="macOS voice (default: Daniel)")
     args = parser.parse_args()
 
