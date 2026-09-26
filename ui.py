@@ -202,7 +202,8 @@ def inject_flair(partners: tuple[Any, ...] | None = None) -> None:
     background: rgba(30, 41, 59, 0.70);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    transform-style: preserve-3d;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
 }}
 
 /* slideUpFade: the entrance plays only on the CARD namespace, so a seat that  */
@@ -214,11 +215,11 @@ def inject_flair(partners: tuple[Any, ...] | None = None) -> None:
     animation-delay: var(--pr-delay, 0ms);
 }}
 
-/* hoverElevation: -4px lift with a warm glow border, per spec. */
+/* hoverElevation: -4px lift with 3D perspective & warm glow border, per spec. */
 {_sel(_SCOPE, ":hover")} {{
-    transform: translateY(-4px);
+    transform: translateY(-4px) perspective(900px) rotateX(1.8deg);
     border-color: var(--pr-accent, {fire_b});
-    box-shadow: 0 12px 34px -10px var(--pr-accent, {fire_b});
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.7), 0 0 20px var(--pr-accent, {fire_b});
 }}
 
 /* The accent reads as a top hairline, so the theme's borderColor still owns  */

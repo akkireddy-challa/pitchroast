@@ -169,12 +169,29 @@ def draw_term_sheet(result: SyndicateResult, *, technical: bool = False) -> None
     st.info(verdict.the_pivot, icon=":material/lightbulb:")
 
     export = term_sheet_text(result)
-    st.download_button(
-        "Download term sheet",
+    dl_col1, dl_col2 = st.columns(2)
+    try:
+        from pdf_generator import generate_term_sheet_pdf
+
+        pdf_bytes = generate_term_sheet_pdf(result)
+        dl_col1.download_button(
+            "Download official verdict (PDF)",
+            data=pdf_bytes,
+            file_name="pitchroast_verdict.pdf",
+            mime="application/pdf",
+            icon=":material/picture_as_pdf:",
+            use_container_width=True,
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Failed to generate PDF term sheet: %s", exc)
+
+    dl_col2.download_button(
+        "Download plain text",
         data=export,
         file_name="pitchroast_term_sheet.txt",
         mime="text/plain",
         icon=":material/download:",
+        use_container_width=True,
     )
     # The export's footer line names the model and the token count. Fine inside
     # a file the founder keeps; not fine rendered on the founder's screen, which

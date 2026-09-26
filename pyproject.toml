@@ -17,6 +17,7 @@ dependencies = [
     "streamlit>=1.64,<2",       # installed: 1.64.0
     "pydantic>=2.13,<3",        # installed: 2.13.5
     "python-dotenv>=1.2,<2",    # installed: 1.2.3
+    "fpdf2>=2.8.0,<3",          # installed: 2.8.8
 ]
 
 [project.optional-dependencies]
@@ -45,7 +46,7 @@ dev = [
 # collision waiting to happen).
 # observability is imported at module scope by syndicate, so an installed
 # syndicate without it is broken. Both must ship.
-py-modules = ["syndicate", "observability"]
+py-modules = ["syndicate", "observability", "pdf_generator"]
 
 [tool.ruff]
 target-version = "py312"

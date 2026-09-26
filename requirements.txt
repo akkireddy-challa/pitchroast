@@ -6,3 +6,4 @@ arize-phoenix>=20.16.0,<21
 openinference-instrumentation-anthropic>=2.1.6,<3
 arize-phoenix-evals>=3.9.0,<4
 arize-phoenix-client>=3.5.0,<4
+fpdf2>=2.8.0,<3

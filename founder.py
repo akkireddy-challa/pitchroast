@@ -162,6 +162,47 @@ def render() -> None:
         st.session_state.preset_choice = "☕ Oat Milk Web3"
         st.rerun()
 
+    with st.expander("📑 Download Sample Pitch Decks (Executive 1-Pager PDFs)", expanded=False, icon=":material/picture_as_pdf:"):
+        st.caption("Need a reference pitch deck? Download ready-to-present sample one-pager PDFs for the committee:")
+        pdf_c1, pdf_c2 = st.columns(2)
+        try:
+            from pdf_generator import get_sample_deck_pdf
+
+            pdf_c1.download_button(
+                "☕ FikaSync Compliance (PDF)",
+                data=get_sample_deck_pdf("☕ FikaSync Compliance"),
+                file_name="FikaSync_Pitch_Deck.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                icon=":material/download:",
+            )
+            pdf_c1.download_button(
+                "💳 Klarna for Regret (PDF)",
+                data=get_sample_deck_pdf("💳 Klarna for Regret"),
+                file_name="Klarna_For_Regret_Pitch_Deck.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                icon=":material/download:",
+            )
+            pdf_c2.download_button(
+                "🤖 AI Standup Bot (PDF)",
+                data=get_sample_deck_pdf("🤖 AI Standup Bot"),
+                file_name="AI_Standup_Bot_Pitch_Deck.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                icon=":material/download:",
+            )
+            pdf_c2.download_button(
+                "☕ Oat Milk Web3 (PDF)",
+                data=get_sample_deck_pdf("☕ Oat Milk Web3"),
+                file_name="OatMilk_Web3_Pitch_Deck.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                icon=":material/download:",
+            )
+        except Exception:  # noqa: BLE001
+            st.caption("PDF generation ready.")
+
     st.text_area(
         "Pitch or executive summary",
         key="pitch_text",

@@ -74,9 +74,20 @@ PitchRoast computes four quantitative indicators for every submission:
 
 | Component | Description | URL |
 | :--- | :--- | :--- |
-| 🎯 **Founder Hot Seat (Live App)** | Public interactive boardroom for live audience pitches | **[akkireddy-challa-pitchroast-app-cwyolp.streamlit.app](https://akkireddy-challa-pitchroast-app-cwyolp.streamlit.app/)** |
-| 📽️ **Interactive Pitch Deck** | Autonomous AI voice narrated presentation (GitHub Pages) | **[akkireddy-challa.github.io/pitchroast](https://akkireddy-challa.github.io/pitchroast/)** |
+| 🎯 **Founder Hot Seat (Live App)** | Public interactive boardroom for live audience pitches & PDF downloads | **[akkireddy-challa-pitchroast-app-cwyolp.streamlit.app](https://akkireddy-challa-pitchroast-app-cwyolp.streamlit.app/)** |
+| 📽️ **Interactive 3D Pitch Deck** | Modern 3D animations + ElevenLabs AI voice narrated presentation | **[akkireddy-challa.github.io/pitchroast](https://akkireddy-challa.github.io/pitchroast/)** |
 | 🔬 **Syndicate Observatory** | Internal operator command centre (Passkey: `pitchroast2026`) | **[Observatory Direct Access](https://akkireddy-challa-pitchroast-app-cwyolp.streamlit.app/?mode=admin&key=pitchroast2026)** |
+
+---
+
+## 🎨 Modern 3D Visuals & Executive PDF Engine
+
+PitchRoast combines modern aesthetic presentation with executive deliverables:
+- **Interactive 3D Depth & Particle Mesh**: The presentation deck features a real-time 3D geometric particle constellation and glowing ember field with dynamic camera parallax responding to mouse movement.
+- **3D Card Tilt with Specular Glare**: Interactive cards tilt smoothly in 3D perspective (`transform: perspective(900px) rotateX(...) rotateY(...) translateZ(8px)`) with moving specular light sheens.
+- **Executive PDF Term Sheets**: Founders can download formal, stamped investment committee verdicts as styled PDFs (`fpdf2`), complete with valuation, covenants, quantitative scorecards, and the 1% pivot.
+- **Sample Pitch Deck One-Pagers (PDF)**: Includes downloadable 1-page sample pitch decks for Swedish presets (`☕ FikaSync Compliance`, `💳 Klarna for Regret`, `🤖 AI Standup Bot`, `☕ Oat Milk Web3`) right from the deck and live app.
+- **ElevenLabs High-Fidelity Audio**: Autonomous slide narration voiced by ElevenLabs' premier model (**Brian**), perfectly timed for a crisp 68-second pitch.
 
 ---
 
@@ -198,7 +209,9 @@ If you want to speak yourself, use this simple, kid-friendly script:
 
 ## 🛠️ Tech Stack
 * **Language & Runtime**: Python 3.12+ / 3.14 (Mise, uv)
-* **Frontend**: Streamlit 1.64 (Custom Dark Glassmorphism CSS)
+* **Frontend**: Streamlit 1.64 (Custom Dark Glassmorphism CSS & 3D tilt) + HTML5 3D WebGL/Canvas Presentation Deck
 * **AI Orchestration**: Anthropic Python SDK (`claude-fable-5-1`, `claude-opus-5-5`, `claude-opus-5`)
+* **Voice Narration**: ElevenLabs Premier Audio (`brian` model)
+* **PDF Engine**: `fpdf2` (Dynamic executive term sheets & 1-pager pitch deck PDFs)
 * **Observability & Tracing**: Arize Phoenix OSS (OpenInference / OpenTelemetry native spans, token metrics, and latency tracking)
 * **Linter & Standards**: Ruff 0.16
