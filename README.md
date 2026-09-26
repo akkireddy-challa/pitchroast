@@ -244,6 +244,7 @@ PitchRoast adheres to authentic open-source engineering standards with transpare
 
 | Document | Description |
 | :--- | :--- |
+| 📄 **[PRD.md](PRD.md)** | Product Requirements Document: Problem statement, user personas, functional specifications (FR-1 to FR-6), and evolution roadmap. |
 | 📐 **[ARCHITECTURE.md](ARCHITECTURE.md)** | Multi-agent parallel fan-out design, OpenTelemetry tracing schema, zero-crash state machine, and dual-mode routing. |
 | 🗺️ **[ROADMAP.md](ROADMAP.md)** | Product milestones: Realtime WebRTC voice interruptions (v1.1), multimodal vision deck critique (v1.2), and multiplayer syndicate tournament (v2.0). |
 | 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** | Developer onboarding guide, local environment setup with `uv`, pre-commit hooks, and instructions for contributing new VC personas. |
