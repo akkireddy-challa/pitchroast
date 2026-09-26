@@ -121,7 +121,7 @@ def _sidebar() -> None:
                 else:
                     st.caption(":gray[Not attending today.]")
 
-        st.caption("Built with Anthropic Claude for Stockholm Build Day at Epicenter.")
+        st.caption("Built with Anthropic Claude for Claude Community Stockholm | Fable 5.1 x Opus 5.5 Build Day.")
 
 
 # --------------------------------------------------------------------------
@@ -143,6 +143,25 @@ def render() -> None:
     )
 
     st.subheader("Your pitch", icon=":material/rocket_launch:")
+
+    pcols = st.columns(4)
+    if pcols[0].button("☕ FikaSync", key="main_fika", use_container_width=True, disabled=st.session_state.running, help="Load Swedish FikaSync Compliance pitch"):
+        st.session_state.pitch_text = PRESETS["☕ FikaSync Compliance"]
+        st.session_state.preset_choice = "☕ FikaSync Compliance"
+        st.rerun()
+    if pcols[1].button("💳 Klarna for Regret", key="main_klarna", use_container_width=True, disabled=st.session_state.running, help="Load Klarna for Regret pitch"):
+        st.session_state.pitch_text = PRESETS["💳 Klarna for Regret"]
+        st.session_state.preset_choice = "💳 Klarna for Regret"
+        st.rerun()
+    if pcols[2].button("🤖 Standup Bot", key="main_standup", use_container_width=True, disabled=st.session_state.running, help="Load AI Standup Bot pitch"):
+        st.session_state.pitch_text = PRESETS["🤖 AI Standup Bot"]
+        st.session_state.preset_choice = "🤖 AI Standup Bot"
+        st.rerun()
+    if pcols[3].button("☕ Oat Milk Web3", key="main_oat", use_container_width=True, disabled=st.session_state.running, help="Load Oat Milk Web3 pitch"):
+        st.session_state.pitch_text = PRESETS["☕ Oat Milk Web3"]
+        st.session_state.preset_choice = "☕ Oat Milk Web3"
+        st.rerun()
+
     st.text_area(
         "Pitch or executive summary",
         key="pitch_text",

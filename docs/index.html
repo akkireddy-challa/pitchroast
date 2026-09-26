@@ -541,7 +541,7 @@
     </div>
     <div class="event-badge">
       <div class="dot"></div>
-      Stockholm Build Day • Epicenter
+      Claude Community Stockholm • Fable 5.1 x Opus 5.5 Build Day
     </div>
   </header>
 
@@ -556,7 +556,7 @@
       <div class="pill-cluster">
         <div class="tech-pill">🤖 Powered by Anthropic Claude</div>
         <div class="tech-pill">⚡ Super Fast Multi-Agent AI</div>
-        <div class="tech-pill">🇸🇪 Built @ Epicenter Stockholm</div>
+        <div class="tech-pill">🇸🇪 Claude Community Stockholm • Track 1: Delight</div>
       </div>
       <div>
         <div class="creator-pill">✨ Created by Akkireddy Challa</div>
@@ -768,7 +768,7 @@
       <div class="kicker">Live Audience Challenge</div>
       <h1>Who Dares Enter The <span class="grad">Hot Seat?</span> 🔥</h1>
       <p class="lead">
-        We need ONE brave founder from Epicenter Stockholm right now!
+        We need ONE brave founder from the Claude Stockholm Community right now!
       </p>
 
       <div class="grid-2" style="margin-top: 1.5rem; text-align: left;">
@@ -790,7 +790,7 @@
       </div>
 
       <div style="margin-top: 2rem; display: flex; gap: 16px; justify-content: center; align-items: center; flex-wrap: wrap;">
-        <a href="http://localhost:8501" target="_blank" class="btn btn-primary" style="font-size: 1.1rem; padding: 12px 28px; text-decoration: none;">
+        <a id="liveAppLink" href="https://pitchroast.streamlit.app" target="_blank" class="btn btn-primary" style="font-size: 1.1rem; padding: 12px 28px; text-decoration: none;">
           🎯 Open Live Hot Seat App ➔
         </a>
         <button class="btn" onclick="goToSlide(1)">🔄 Replay Deck</button>
@@ -838,7 +838,7 @@
     const SLIDE_SPEECHES = {
       1: {
         file: 'audio/slide1',
-        text: "Hello Epicenter Stockholm! I am the AI clone of human Akkireddy Challa. My human original built this entire project tonight for the Claude Hackathon. But why have a tired human pitch on stage when you can have a superior AI clone do it with zero stage fright? Welcome to PitchRoast! Let's see why your business idea is probably terrible."
+        text: "Hello Claude Community Stockholm! I am the AI clone of human Akkireddy Challa. My human original built this entire project tonight for the Claude Community Fable 5.1 x Opus 5.5 Build Day. But why have a tired human pitch on stage when you can have a superior AI clone do it with zero stage fright? Welcome to PitchRoast! Let's see why your business idea is probably terrible."
       },
       2: {
         file: 'audio/slide2',
@@ -850,7 +850,7 @@
       },
       4: {
         file: 'audio/slide4',
-        text: "Tonight at Epicenter Stockholm, we tested two real Swedish ideas. First, Klarna for Regret: paying for your bad life decisions in four easy installments. Boss Shark gave it a valuation of twenty-five kronor and a half-eaten cinnamon bun. Second, FikaSync: an AI that locks your computer if you don't eat a cinnamon bun at 3 PM. Funded with a lifetime supply of coffee!"
+        text: "Tonight at the Claude Community Build Day, we tested two real Swedish ideas. First, Klarna for Regret: paying for your bad life decisions in four easy installments. Boss Shark gave it a valuation of twenty-five kronor and a half-eaten cinnamon bun. Second, FikaSync: an AI that locks your computer if you don't eat a cinnamon bun at 3 PM. Funded with a lifetime supply of coffee!"
       },
       5: {
         file: 'audio/slide5',
@@ -866,7 +866,7 @@
       },
       8: {
         file: 'audio/slide8',
-        text: "And now, talk is cheap! We need one brave founder from this Epicenter audience right now! Shout out your startup idea in one sentence, and let our four AI judges roast you live on screen in fifteen seconds. Who has the courage to enter the Hot Seat?"
+        text: "And now, talk is cheap! We need one brave founder from this Claude Community audience right now! Shout out your startup idea in one sentence, and let our four AI judges roast you live on screen in fifteen seconds. Who has the courage to enter the Hot Seat?"
       }
     };
 
@@ -1060,6 +1060,14 @@
         goToSlide(parseInt(e.key));
       }
     });
+
+    // Dynamic App URL resolution (e.g. ?app=https://pitchroast.streamlit.app or custom cloud run url)
+    const urlParams = new URLSearchParams(window.location.search);
+    const customAppUrl = urlParams.get('app');
+    if (customAppUrl) {
+      const linkEl = document.getElementById('liveAppLink');
+      if (linkEl) linkEl.href = customAppUrl;
+    }
 
     updateSlide();
   </script>

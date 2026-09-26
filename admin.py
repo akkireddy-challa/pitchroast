@@ -491,7 +491,16 @@ def render() -> None:
     """Draw the observatory. Called once per rerun, by `app.py`."""
     handle, reason = state.tracing()
 
-    st.title("Syndicate observatory", anchor=False)
+    header_col, lock_col = st.columns([4, 1], vertical_alignment="center")
+    with header_col:
+        st.title("Syndicate observatory", anchor=False)
+    with lock_col:
+        if st.button("🔒 Lock Admin", key="lock_admin_btn", help="Lock the Observatory and return to Hot Seat"):
+            st.session_state.admin_authenticated = False
+            st.query_params[state.K_MODE] = state.FOUNDER
+            st.session_state[state.K_MODE] = state.FOUNDER
+            st.rerun()
+
     st.caption(
         "Operator and judge view. Shares one session with the Founder Hot Seat — "
         "the verdict below was generated there and is not re-run by this page."
